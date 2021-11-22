@@ -39,7 +39,7 @@ typedef struct FwdList_Node_t
 {
     bool                   inUse;
     struct FwdList_Node_t *pNext;
-    void                  *pDataVoid;
+    uint8_t               *pData;
 } FwdList_Node_t;
 
 /**

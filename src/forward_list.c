@@ -54,6 +54,7 @@ FwdList_Error_e FwdList_PushFront(FwdList_t *pObj, void *pDataInVoid)
     FwdList_Error_e err = FwdList_Error_None;
 
     FwdList_Node_t *pNode = FwdList_GetFreeNode(pObj);
+
     if (pNode != NULL)
     {
         pNode->inUse = true;
@@ -61,10 +62,9 @@ FwdList_Error_e FwdList_PushFront(FwdList_t *pObj, void *pDataInVoid)
 
         /* Push the data into the list one byte at a time */
         uint8_t *pDataIn = (uint8_t *)pDataInVoid;
-        uint8_t *pDataBuf = (uint8_t *)pNode->pDataVoid;
         for (size_t byte = 0; byte < pObj->dataSize; byte++)
         {
-            pDataBuf[byte] = pDataIn[byte];
+            pNode->pData[byte] = pDataIn[byte];
         }
 
         if (pObj->pHead != NULL)
@@ -100,10 +100,9 @@ FwdList_Error_e FwdList_PushBack(FwdList_t *pObj, void *pDataInVoid)
 
         /* Push the data into the list one byte at a time */
         uint8_t *pDataIn = (uint8_t *)pDataInVoid;
-        uint8_t *pDataBuf = (uint8_t *)pNode->pDataVoid;
         for (size_t byte = 0; byte < pObj->dataSize; byte++)
         {
-            pDataBuf[byte] = pDataIn[byte];
+            pNode->pData[byte] = pDataIn[byte];
         }
 
         pNode->pNext  = NULL;
@@ -142,11 +141,9 @@ FwdList_Error_e FwdList_PopFront(FwdList_t *pObj, void *pDataOutVoid)
 
         /* Pop the data off the list one byte at a time */
         uint8_t *pDataOut = (uint8_t *)pDataOutVoid;
-        uint8_t *pDataBuf = (uint8_t *)pObj->pHead->pDataVoid;
-
         for (size_t byte = 0; byte < pObj->dataSize; byte++)
         {
-            pDataOut[byte] = pDataBuf[byte];
+            pDataOut[byte] = pObj->pHead->pData[byte];
         }
 
         pObj->pHead->inUse = false;
@@ -169,11 +166,9 @@ FwdList_Error_e FwdList_PopBack(FwdList_t *pObj, void *pDataOutVoid)
     {
         /* Pop the data off the list one byte at a time */
         uint8_t *pDataOut = (uint8_t *)pDataOutVoid;
-        uint8_t *pDataBuf = (uint8_t *)pObj->pTail->pDataVoid;
-
         for (size_t byte = 0; byte < pObj->dataSize; byte++)
         {
-            pDataOut[byte] = pDataBuf[byte];
+            pDataOut[byte] = pObj->pTail->pData[byte];
         }
 
         /* Find the new tail node */
@@ -254,7 +249,7 @@ FwdList_Node_t *FwdList_GetFreeNode(FwdList_t *pObj)
             pFreeNode = &pObj->pNodeBuf[node];
 
             /* Make the node points its data section */
-            pFreeNode->pDataVoid = &pObj->pDataBuf[node * pObj->dataSize];
+            pFreeNode->pData = &pObj->pDataBuf[node * pObj->dataSize];
             break;
         }
     }
