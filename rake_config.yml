@@ -1,0 +1,26 @@
+################################################################################
+#                           UNIT TEST CONFIGURATION                            #
+################################################################################
+:test:
+  :name: 'test'
+  :output_path: 'build/test'
+  :comp_path: '/usr/bin'
+  :comp_args:
+    - '-g3'
+    - '-Og'
+    - '-Wall'
+    - '-fpic'
+    - '-m32'
+    - '-fshort-enums'
+  :defines:
+    :prefix: '-D'
+    :items:
+      - 'GREATEST_USE_ABBREVS'
+  :includes:
+    :prefix: '-I'
+    :items:
+      - 'src/'
+      - 'test/'
+  :src_files:
+      - 'src/forward_list.c'
+      - 'test/main.c'
