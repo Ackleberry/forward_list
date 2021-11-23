@@ -37,7 +37,6 @@ typedef enum FwdList_Error_e
 
 typedef struct FwdList_Node_t
 {
-    bool                   inUse;
     struct FwdList_Node_t *pNext;
     uint8_t               *pData;
 } FwdList_Node_t;
@@ -51,12 +50,13 @@ typedef struct FwdList_t
 {
     FwdList_Node_t *pHead;          /*!< Head node cursor */
     FwdList_Node_t *pTail;          /*!< Tail node cursor */
+    FwdList_Node_t *pFreeHead;      /*!< Head cursor for free nodes */
+    FwdList_Node_t *pFreeTail;      /*!< Tail cursor for free nodes */
     FwdList_Node_t *pNodeBuf;       /*!< Pointer to the node buffer */
     uint8_t        *pDataBuf;       /*!< Pointer to the data buffer */
     size_t          nodeBufSize;    /*!< Size of the node buffer */
     size_t          dataBufSize;    /*!< Size of the data buffer */
     size_t          dataSize;       /*!< Size of the data type to be stored */
-    size_t          nodesInUse;     /*!< Number of nodes currently in use */
 } FwdList_t;
 
 #endif /* FORWARD_LIST_T_H_INCLUDED */

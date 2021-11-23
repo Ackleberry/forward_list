@@ -11,7 +11,9 @@
  *============================================================================*/
 #include "forward_list.h"
 
-FwdList_Node_t *FwdList_GetFreeNode(FwdList_t *pObj);
+void            FreeList_PushFront(FwdList_t *pObj, FwdList_Node_t *pNode);
+FwdList_Node_t *FreeList_PopFront(FwdList_t *pObj);
+bool            FreeList_IsEmpty(FwdList_t *pObj);
 
 /*============================================================================*
  *                      P U B L I C    F U N C T I O N S                      *
@@ -20,22 +22,26 @@ FwdList_Node_t *FwdList_GetFreeNode(FwdList_t *pObj);
 void FwdList_Init(FwdList_t *pObj, void *pNodeBuf, size_t nodeBufSize,
                   void *pDataBuf, size_t dataBufSize, size_t dataSize)
 {
-    pObj->pHead = NULL;
-    pObj->pTail = NULL;
+    pObj->pHead     = NULL;
+    pObj->pTail     = NULL;
+    pObj->pFreeHead = NULL;
+    pObj->pFreeTail = NULL;
 
     pObj->pNodeBuf    = pNodeBuf;
-    pObj->nodeBufSize = nodeBufSize;
-
     pObj->pDataBuf    = pDataBuf;
+
+    pObj->nodeBufSize = nodeBufSize;
     pObj->dataBufSize = dataBufSize;
     pObj->dataSize    = dataSize;
 
-    pObj->nodesInUse  = 0;
-
+    /* Initailize and push all nodes onto the free list */
     size_t totalNodes = (pObj->nodeBufSize / sizeof(FwdList_Node_t));
     for (size_t node = 0; node < totalNodes; node++)
     {
-        pObj->pNodeBuf[node].inUse = false;
+        /* Make each node point to its data section */
+        pObj->pNodeBuf[node].pData = &pObj->pDataBuf[node * pObj->dataSize];
+
+        FreeList_PushFront(pObj, &pObj->pNodeBuf[node]);
     }
 }
 
@@ -46,20 +52,17 @@ bool FwdList_IsEmpty(FwdList_t *pObj)
 
 bool FwdList_IsFull(FwdList_t *pObj)
 {
-    return (pObj->nodesInUse >= (pObj->nodeBufSize / sizeof(FwdList_Node_t)));
+    return FreeList_IsEmpty(pObj);
 }
 
 FwdList_Error_e FwdList_PushFront(FwdList_t *pObj, void *pDataInVoid)
 {
     FwdList_Error_e err = FwdList_Error_None;
 
-    FwdList_Node_t *pNode = FwdList_GetFreeNode(pObj);
+    FwdList_Node_t *pNode = FreeList_PopFront(pObj);
 
     if (pNode != NULL)
     {
-        pNode->inUse = true;
-        pObj->nodesInUse++;
-
         /* Push the data into the list one byte at a time */
         uint8_t *pDataIn = (uint8_t *)pDataInVoid;
         for (size_t byte = 0; byte < pObj->dataSize; byte++)
@@ -91,13 +94,10 @@ FwdList_Error_e FwdList_PushBack(FwdList_t *pObj, void *pDataInVoid)
 {
     FwdList_Error_e err = FwdList_Error_None;
 
-    FwdList_Node_t *pNode = FwdList_GetFreeNode(pObj);
+    FwdList_Node_t *pNode = FreeList_PopFront(pObj);
 
     if (pNode != NULL)
     {
-        pNode->inUse = true;
-        pObj->nodesInUse++;
-
         /* Push the data into the list one byte at a time */
         uint8_t *pDataIn = (uint8_t *)pDataInVoid;
         for (size_t byte = 0; byte < pObj->dataSize; byte++)
@@ -154,9 +154,7 @@ FwdList_Error_e FwdList_PopFront(FwdList_t *pObj, void *pDataOutVoid)
             pObj->pHead->pNext = NULL;
         }
 
-        /* Emulate free() here? */
-        pObj->pHead->inUse = false;
-        pObj->nodesInUse--;
+        FreeList_PushFront(pObj, pObj->pHead);
         pObj->pHead = pNewHead;
     }
 
@@ -190,15 +188,13 @@ FwdList_Error_e FwdList_PopBack(FwdList_t *pObj, void *pDataOutVoid)
         /* Only 1 node exists */
         if (pNewTail->pNext == NULL)
         {
-            pObj->pTail->inUse = false;
-            pObj->nodesInUse--;
+            FreeList_PushFront(pObj, pObj->pTail);
             pObj->pHead = NULL;
             pObj->pTail = NULL;
         }
         else
         {
-            pObj->pTail->inUse = false;
-            pObj->nodesInUse--;
+            FreeList_PushFront(pObj, pObj->pTail);
             pNewTail->pNext = NULL;
             pObj->pTail = pNewTail;
         }
@@ -244,23 +240,58 @@ FwdList_Error_e FwdList_PeekBack(FwdList_t *pObj, void *pDataOutVoid)
  *                     P R I V A T E    F U N C T I O N S                     *
  *============================================================================*/
 
-FwdList_Node_t *FwdList_GetFreeNode(FwdList_t *pObj)
+void FreeList_PushFront(FwdList_t *pObj, FwdList_Node_t *pNode)
 {
-    /* Find the first free node starting from the beginning of the node buffer */
-    FwdList_Node_t *pFreeNode = NULL;
-
-    size_t totalNodes = (pObj->nodeBufSize / sizeof(FwdList_Node_t));
-    for (size_t node = 0; node < totalNodes; node++)
+    if (pNode != NULL)
     {
-        if (pObj->pNodeBuf[node].inUse == false)
+        if (pObj->pFreeHead == NULL)
         {
-            pFreeNode = &pObj->pNodeBuf[node];
-
-            /* Make the node points its data section */
-            pFreeNode->pData = &pObj->pDataBuf[node * pObj->dataSize];
-            break;
+            pNode->pNext = NULL;
+            pObj->pFreeTail = pNode;
         }
+        else
+        {
+            pNode->pNext = pObj->pFreeHead;
+        }
+
+        pObj->pFreeHead = pNode;
+    }
+}
+
+FwdList_Node_t *FreeList_PopFront(FwdList_t *pObj)
+{
+    FwdList_Node_t *pFreeNode;
+
+    if (FreeList_IsEmpty(pObj))
+    {
+        pFreeNode = NULL;
+    }
+    else
+    {
+        pFreeNode = pObj->pFreeHead;
+        FwdList_Node_t *pNewFreeHead = pObj->pFreeHead->pNext;
+
+        if (pNewFreeHead == NULL)
+        {
+            pObj->pFreeTail = NULL;
+        }
+        else
+        {
+            pObj->pFreeHead->pNext = NULL;
+        }
+
+        pObj->pFreeHead = pNewFreeHead;
     }
 
     return pFreeNode;
+}
+
+bool FreeList_IsEmpty(FwdList_t *pObj)
+{
+    return ((pObj->pFreeHead == NULL) && (pObj->pFreeTail == NULL));
+}
+
+bool FreeList_IsFull(FwdList_t *pObj)
+{
+    return FwdList_IsEmpty(pObj);
 }
