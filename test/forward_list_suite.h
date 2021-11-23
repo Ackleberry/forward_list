@@ -883,6 +883,51 @@ TEST List_can_empty_a_full_buffer_of_4_byte_data_types_by_push_back_and_pop_back
     PASS();
 }
 
+TEST List_can_partially_fill_and_empty_multiple_times()
+{
+    /*****************    Arrange    *****************/
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[7];
+    int32_t        dataBuf[7];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint8_t err = (uint8_t)FwdList_Error_None;
+
+    int32_t dataIn[7] =
+    {
+        [0] = INT32_MIN,
+        [1] = 121,
+        [2] = -121,
+        [3] = 7,
+        [4] = INT32_MAX,
+        [5] = -99,
+        [6] = 99,
+    };
+    int32_t dataOut[7] = { 0 };
+    uint8_t isFull = 0;
+    uint8_t isEmpty = 1;
+
+    /*****************     Act       *****************/
+    for (uint16_t i = 0; i < 1000; i++)
+    {
+        err |= (uint8_t)FwdList_PushFront(&list, &dataIn[i % ELEMENTS_IN(dataBuf)]);
+        err |= (uint8_t)FwdList_PushBack(&list, &dataIn[i % ELEMENTS_IN(dataBuf)]);
+        err |= (uint8_t)FwdList_PopFront(&list, &dataOut[i % ELEMENTS_IN(dataBuf)]);
+        err |= (uint8_t)FwdList_PopBack(&list, &dataOut[i % ELEMENTS_IN(dataBuf)]);
+
+        isFull |= (uint8_t)FwdList_IsFull(&list);
+        isEmpty &= (uint8_t)FwdList_IsEmpty(&list);
+    }
+
+    /*****************    Assert     *****************/
+    ASSERT_EQ(0U, isFull);
+    ASSERT_EQ(1U, isEmpty);
+    ASSERT_EQ(FwdList_Error_None, (FwdList_Error_e)err);
+
+    PASS();
+}
+
 SUITE(FwdList_Suite)
 {
     /* Unit Tests */
@@ -930,6 +975,8 @@ SUITE(FwdList_Suite)
     RUN_TEST(List_can_empty_a_full_buffer_of_4_byte_data_types_by_push_front_and_pop_back);
     RUN_TEST(List_can_empty_a_full_buffer_of_4_byte_data_types_by_push_front_and_pop_front);
     RUN_TEST(List_can_empty_a_full_buffer_of_4_byte_data_types_by_push_back_and_pop_back);
+
+    RUN_TEST(List_can_partially_fill_and_empty_multiple_times);
 }
 
 #endif /* FORDWARD_LIST_SUITE_INCLUDED */
