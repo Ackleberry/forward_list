@@ -22,15 +22,13 @@ bool            FreeList_IsEmpty(FwdList_t *pObj);
 void FwdList_Init(FwdList_t *pObj, void *pNodeBuf, size_t nodeBufSize,
                   void *pDataBuf, size_t dataBufSize, size_t dataSize)
 {
-    pObj->pHead     = NULL;
-    pObj->pTail     = NULL;
-    pObj->pFreeHead = NULL;
-    pObj->pFreeTail = NULL;
-
+    pObj->pHead       = NULL;
+    pObj->pTail       = NULL;
+    pObj->pFreeHead   = NULL;
+    pObj->pFreeTail   = NULL;
     pObj->pNodeBuf    = pNodeBuf;
-    pObj->pDataBuf    = pDataBuf;
-
     pObj->nodeBufSize = nodeBufSize;
+    pObj->pDataBuf    = pDataBuf;
     pObj->dataBufSize = dataBufSize;
     pObj->dataSize    = dataSize;
 
