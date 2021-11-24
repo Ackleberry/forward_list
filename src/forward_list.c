@@ -93,18 +93,19 @@ FwdList_Error_e FwdList_PushBack(FwdList_t *pObj, void *pDataInVoid)
 
     FwdList_Node_t *pNode = FreeList_PopFront(pObj);
 
-    if (pNode != NULL)
+    if (pNode == NULL)
+    {
+        err = FwdList_Error;
+    }
+    else
     {
         /* Push the data into the list one byte at a time */
-        uint8_t *pDataIn = (uint8_t *)pDataInVoid;
         for (size_t byte = 0; byte < pObj->dataSize; byte++)
         {
-            pNode->pData[byte] = pDataIn[byte];
+            pNode->pData[byte] = ((uint8_t *)pDataInVoid)[byte];
         }
 
-        pNode->pNext  = NULL;
-
-        if (pObj->pTail == NULL)
+        if (FwdList_IsEmpty(pObj))
         {
             pObj->pHead = pNode;
         }
@@ -113,11 +114,8 @@ FwdList_Error_e FwdList_PushBack(FwdList_t *pObj, void *pDataInVoid)
             pObj->pTail->pNext = pNode;
         }
 
-        pObj->pTail = pNode;
-    }
-    else
-    {
-        err = FwdList_Error;
+        pObj->pTail         = pNode;
+        pObj->pTail->pNext  = NULL;
     }
 
     return err;
