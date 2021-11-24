@@ -162,28 +162,27 @@ FwdList_Error_e FwdList_PopBack(FwdList_t *pObj, void *pDataOutVoid)
     else
     {
         /* Pop the data off the list one byte at a time */
-        uint8_t *pDataOut = (uint8_t *)pDataOutVoid;
         for (size_t byte = 0; byte < pObj->dataSize; byte++)
         {
-            pDataOut[byte] = pObj->pTail->pData[byte];
+            ((uint8_t *)pDataOutVoid)[byte] = pObj->pTail->pData[byte];
         }
 
-        /* Find the node before the tail */
         FwdList_Node_t *pNewTail = pObj->pHead;
-        while ((pNewTail->pNext != NULL) && (pNewTail->pNext != pObj->pTail))
-        {
-            pNewTail = pNewTail->pNext;
-        }
-
-        /* Only 1 node exists */
         if (pNewTail->pNext == NULL)
         {
+            /* Only 1 node exists */
             FreeList_PushFront(pObj, pObj->pTail);
             pObj->pHead = NULL;
             pObj->pTail = NULL;
         }
         else
         {
+            /* Find the node before the tail */
+            while (pNewTail->pNext != pObj->pTail)
+            {
+                pNewTail = pNewTail->pNext;
+            }
+
             FreeList_PushFront(pObj, pObj->pTail);
             pNewTail->pNext = NULL;
             pObj->pTail = pNewTail;
