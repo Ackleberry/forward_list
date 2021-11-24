@@ -195,31 +195,38 @@ FwdList_Error_e FwdList_PopBack(FwdList_t *pObj, void *pDataOutVoid)
 FwdList_Error_e FwdList_PeekFront(FwdList_t *pObj, void *pDataOutVoid)
 {
     FwdList_Error_e err = FwdList_Error_None;
-    FwdList_Node_t *pHead = pObj->pHead;
-    FwdList_Node_t *pTail = pObj->pTail;
 
-    err = FwdList_PopFront(pObj, pDataOutVoid);
-
-    if (err == FwdList_Error_None)
+    if (FwdList_IsEmpty(pObj))
     {
-        pObj->pHead = pHead;
-        pObj->pTail = pTail;
+        err = FwdList_Error;
     }
+    else
+    {
+        /* Pop the data off the list one byte at a time */
+        for (size_t byte = 0; byte < pObj->dataSize; byte++)
+        {
+            ((uint8_t *)pDataOutVoid)[byte] = pObj->pHead->pData[byte];
+        }
+    }
+
     return err;
 }
 
 FwdList_Error_e FwdList_PeekBack(FwdList_t *pObj, void *pDataOutVoid)
 {
     FwdList_Error_e err = FwdList_Error_None;
-    FwdList_Node_t *pHead = pObj->pHead;
-    FwdList_Node_t *pTail = pObj->pTail;
 
-    err = FwdList_PopBack(pObj, pDataOutVoid);
-
-    if (err == FwdList_Error_None)
+    if (FwdList_IsEmpty(pObj))
     {
-        pObj->pHead = pHead;
-        pObj->pTail = pTail;
+        err = FwdList_Error;
+    }
+    else
+    {
+        /* Pop the data off the list one byte at a time */
+        for (size_t byte = 0; byte < pObj->dataSize; byte++)
+        {
+            ((uint8_t *)pDataOutVoid)[byte] = pObj->pTail->pData[byte];
+        }
     }
 
     return err;
