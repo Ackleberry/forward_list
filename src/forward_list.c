@@ -132,25 +132,20 @@ FwdList_Error_e FwdList_PopFront(FwdList_t *pObj, void *pDataOutVoid)
     else
     {
         /* Pop the data off the list one byte at a time */
-        uint8_t *pDataOut = (uint8_t *)pDataOutVoid;
         for (size_t byte = 0; byte < pObj->dataSize; byte++)
         {
-            pDataOut[byte] = pObj->pHead->pData[byte];
+            ((uint8_t *)pDataOutVoid)[byte] = pObj->pHead->pData[byte];
         }
 
         FwdList_Node_t *pNewHead = pObj->pHead->pNext;
+        FreeList_PushFront(pObj, pObj->pHead);
+        pObj->pHead = pNewHead;
 
-        if (pNewHead == NULL)
+        /* Only 1 node exists, update the tail */
+        if (pObj->pHead == NULL)
         {
             pObj->pTail = NULL;
         }
-        else
-        {
-            pObj->pHead->pNext = NULL;
-        }
-
-        FreeList_PushFront(pObj, pObj->pHead);
-        pObj->pHead = pNewHead;
     }
 
     return err;
