@@ -575,6 +575,86 @@ TEST List_can_peek_at_next_element_to_be_back_popped_when_pushed_from_front(void
     PASS();
 }
 
+TEST List_can_peek_front_without_memory_leak(void)
+{
+    /*****************    Arrange    *****************/
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[4];
+    uint32_t       dataBuf[4];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn[] = { 999, 244, 1500, 1 };
+    uint32_t peekData;
+    uint32_t poppedData[4] = {0};
+
+    FwdList_PushBack(&list, &dataIn[0]);
+    FwdList_PushBack(&list, &dataIn[1]);
+    FwdList_PushBack(&list, &dataIn[2]);
+    FwdList_PushBack(&list, &dataIn[3]);
+
+    /*****************     Act       *****************/
+    FwdList_Error_e err = FwdList_PeekFront(&list, &peekData);
+
+    /*****************    Assert     *****************/
+    ASSERT_EQ(FwdList_Error_None, err);
+    ASSERT_EQ(dataIn[0], peekData);
+    ASSERT_EQ(true,  FwdList_IsFull(&list));
+    ASSERT_EQ(false, FwdList_IsEmpty(&list));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &poppedData[0]));
+    ASSERT_EQ(dataIn[0], poppedData[0]);
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &poppedData[1]));
+    ASSERT_EQ(dataIn[1], poppedData[1]);
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &poppedData[2]));
+    ASSERT_EQ(dataIn[2], poppedData[2]);
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &poppedData[3]));
+    ASSERT_EQ(dataIn[3], poppedData[3]);
+    ASSERT_EQ(false, FwdList_IsFull(&list));
+    ASSERT_EQ(true,  FwdList_IsEmpty(&list));
+
+    PASS();
+}
+
+TEST List_can_peek_back_without_memory_leak(void)
+{
+    /*****************    Arrange    *****************/
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[4];
+    uint32_t       dataBuf[4];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn[] = { 999, 244, 1500, 1 };
+    uint32_t peekData;
+    uint32_t poppedData[4] = {0};
+
+    FwdList_PushFront(&list, &dataIn[0]);
+    FwdList_PushFront(&list, &dataIn[1]);
+    FwdList_PushFront(&list, &dataIn[2]);
+    FwdList_PushFront(&list, &dataIn[3]);
+
+    /*****************     Act       *****************/
+    FwdList_Error_e err = FwdList_PeekBack(&list, &peekData);
+
+    /*****************    Assert     *****************/
+    ASSERT_EQ(FwdList_Error_None, err);
+    ASSERT_EQ(dataIn[0], peekData);
+    ASSERT_EQ(true,  FwdList_IsFull(&list));
+    ASSERT_EQ(false, FwdList_IsEmpty(&list));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &poppedData[0]));
+    ASSERT_EQ(dataIn[3], poppedData[0]);
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &poppedData[1]));
+    ASSERT_EQ(dataIn[2], poppedData[1]);
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &poppedData[2]));
+    ASSERT_EQ(dataIn[1], poppedData[2]);
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &poppedData[3]));
+    ASSERT_EQ(dataIn[0], poppedData[3]);
+    ASSERT_EQ(false, FwdList_IsFull(&list));
+    ASSERT_EQ(true,  FwdList_IsEmpty(&list));
+
+    PASS();
+}
+
 TEST List_can_empty_a_full_buffer_of_1_byte_data_types_by_push_back_and_pop_front(void)
 {
     /*****************    Arrange    *****************/
@@ -964,6 +1044,8 @@ SUITE(FwdList_Suite)
     RUN_TEST(List_can_peek_at_next_element_to_be_front_popped_when_pushed_from_front);
     RUN_TEST(List_can_peek_at_next_element_to_be_back_popped_when_pushed_from_back);
     RUN_TEST(List_can_peek_at_next_element_to_be_back_popped_when_pushed_from_front);
+    RUN_TEST(List_can_peek_front_without_memory_leak);
+    RUN_TEST(List_can_peek_back_without_memory_leak);
 
     /* Integration Tests */
     RUN_TEST(List_can_empty_a_full_buffer_of_1_byte_data_types_by_push_back_and_pop_front);
