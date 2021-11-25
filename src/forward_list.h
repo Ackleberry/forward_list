@@ -1,7 +1,7 @@
 /*******************************************************************************
- * @file  forward_list.h
+ * @file    forward_list.h
  *
- * @brief  Singly linked list function prototypes
+ * @brief   Singly linked list function prototypes
  *
  * @author  Brooks Anderson <bilbrobaggins@gmail.com>
  ******************************************************************************/
@@ -22,104 +22,108 @@
  *============================================================================*/
 
 /*******************************************************************************
- * @brief  Initializes the forward list object
+ * @brief    Initializes the forward list object
  *
- * @details  The caller is responsible for allocating the list object, and
- *           deque buffer.
+ * @details  The caller is responsible for allocating the list object, node and
+ *           data buffers.
  *
  * @param pObj         Pointer to the forward list object
  * @param pNodeBuf     Pointer to the node buffer
- * @param nodeBufSize  Size of the node buffer. Must be an integer multiple of
- *                     d
- * @param pDataBuf     Pointer to the data buffer
- * @param dataBufSize  Size of the data buffer. Must be an integer multiple of
- *                     dataSize.
+ * @param nodeBufSize  Size of the node buffer.
+ * @param pDataBuf     Pointer to the data buffer.
+ * @param dataBufSize  Size of the data buffer.
  * @param dataSize     Size of the data type being stored by the list
+ *
+ * @note  Node and Data buffers must have the same number of elements. The data
+ *        buffer must also be an integer multiple of `dataSize`.
  ******************************************************************************/
 void FwdList_Init(FwdList_t *pObj, void *pNodeBuf, size_t nodeBufSize,
                   void *pDataBuf, size_t dataBufSize, size_t dataSize);
 
 /*******************************************************************************
- * @brief  Check if the deque is empty
+ * @brief  Check if the forward list is empty
  *
- * @param pObj  Pointer to the deque object
+ * @param pObj  Pointer to the forward list object
  *
  * @returns true if empty
  ******************************************************************************/
 bool FwdList_IsEmpty(FwdList_t *pObj);
 
 /*******************************************************************************
- * @brief Check if the deque is full
+ * @brief Check if the forward list is full
  *
- * @param pObj  Pointer to the deque object
+ * @param pObj  Pointer to the forward list object
  *
  * @returns true if full
  ******************************************************************************/
 bool FwdList_IsFull(FwdList_t *pObj);
 
 /*******************************************************************************
- * @brief  Pushes data onto the front of the deque
+ * @brief  Pushes data onto the front of the forward list
  *
- * @param pObj         Pointer to the deque object
+ * @details  This function is equivalent to a Stack_Push()
+ *
+ * @param pObj         Pointer to the forward list object
  * @param pDataInVoid  Pointer to the data that will be pushed
  *
- * @returns Deque error flag
+ * @returns forward list error flag
  ******************************************************************************/
 FwdList_Error_e FwdList_PushFront(FwdList_t *pObj, void *pDataInVoid);
 
 /*******************************************************************************
- * @brief  Pushes data onto the back of the deque
+ * @brief  Pushes data onto the back of the forward list
  *
- * @details This function is equivalent to a Queue_Push(), Stack_Push()
+ * @details  This function is equivalent to a Queue_Push()
  *
- * @param pObj         Pointer to the deque object
+ * @param pObj         Pointer to the forward list object
  * @param pDataInVoid  Pointer to the data that will be pushed
  *
- * @returns Deque error flag
+ * @returns forward list error flag
  ******************************************************************************/
 FwdList_Error_e FwdList_PushBack(FwdList_t *pObj, void *pDataInVoid);
 
 /*******************************************************************************
- * @brief  Pops data member off the front of the deque
+ * @brief  Pops data member off the front of the forward list
  *
- * @details This function is equivalent to a Queue_Pop()
+ * @details  This function is equivalent to a Stack_Pop(), or Queue_Pop()
  *
- * @param pObj          Pointer to the deque object
+ * @param pObj          Pointer to the forward list object
  * @param pDataOutVoid  Pointer to the data that will be popped
  *
- * @returns Deque error flag
+ * @returns forward list error flag
  ******************************************************************************/
 FwdList_Error_e FwdList_PopFront(FwdList_t *pObj, void *pDataOutVoid);
 
 /*******************************************************************************
- * @brief  Pops data member off the rear of the deque
+ * @brief  Pops data member off the rear of the forward list
  *
- * @details This function is equivalent to a Stack_Pop()
+ * @note   Use with caution. Singly linked lists back pops are not efficient!
+ *         This function has O(N) complexity.
  *
- * @param pObj          Pointer to the deque object
+ * @param pObj          Pointer to the forward list object
  * @param pDataOutVoid  Pointer to the data that will be popped
  *
- * @returns Deque error flag
+ * @returns forward list error flag
  ******************************************************************************/
 FwdList_Error_e FwdList_PopBack(FwdList_t *pObj, void *pDataOutVoid);
 
 /*******************************************************************************
- * @brief  Peek at the data at the front of the deque
+ * @brief  Peek at the data at the front of the forward list
  *
- * @param  pObj          Pointer to the deque object
+ * @param  pObj          Pointer to the forward list object
  * @param  pDataOutVoid  Pointer to the peeked data
  *
- * @returns Deque error flag
+ * @returns forward list error flag
  ******************************************************************************/
 FwdList_Error_e FwdList_PeekFront(FwdList_t *pObj, void *pDataOutVoid);
 
 /*******************************************************************************
- * @brief  Peek at the data at the back of the deque
+ * @brief  Peek at the data at the back of the forward list
  *
- * @param  pObj          Pointer to the deque object
+ * @param  pObj          Pointer to the forward list object
  * @param  pDataOutVoid  Pointer to the peeked data
  *
- * @returns Deque error flag
+ * @returns forward list error flag
  ******************************************************************************/
 FwdList_Error_e FwdList_PeekBack(FwdList_t *pObj, void *pDataOutVoid);
 
