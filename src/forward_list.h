@@ -83,6 +83,22 @@ FwdList_Error_e FwdList_PushFront(FwdList_t *pObj, void *pDataInVoid);
 FwdList_Error_e FwdList_PushBack(FwdList_t *pObj, void *pDataInVoid);
 
 /*******************************************************************************
+ * @brief  Inserts data before a desired node in the linked list
+ *
+ * @details  For an insert to take place, a compare function is needed to help
+ *           find the desired node to perform the insertion on.
+ *
+ * @param pObj         Pointer to the forward list object
+ * @param pCompFn      Caller defined compare function that determines which
+ *                     node to get. See function signature for `CompareFnPtr_t`.
+ * @param pDataInVoid  Pointer to the data that will be used in the comparison
+ *
+ * @returns forward list error flag
+ ******************************************************************************/
+FwdList_Error_e FwdList_Insert(FwdList_t *pObj, CompareFnPtr_t pCompFn,
+                                                void *pDataInVoid);
+
+/*******************************************************************************
  * @brief  Pops data member off the front of the forward list
  *
  * @details  This function is equivalent to a Stack_Pop(), or Queue_Pop()
@@ -126,6 +142,5 @@ FwdList_Error_e FwdList_PeekFront(FwdList_t *pObj, void *pDataOutVoid);
  * @returns forward list error flag
  ******************************************************************************/
 FwdList_Error_e FwdList_PeekBack(FwdList_t *pObj, void *pDataOutVoid);
-
 
 #endif /* FORWARD_LIST_H_INCLUDED */

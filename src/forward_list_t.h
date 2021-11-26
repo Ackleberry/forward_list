@@ -13,6 +13,7 @@
  *============================================================================*/
 #include <stddef.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 /*============================================================================*
  *                                D E F I N E S                               *
@@ -34,6 +35,17 @@ typedef enum FwdList_Error_e
 /*============================================================================*
  *                             S T R U C T U R E S                            *
  *============================================================================*/
+
+/*******************************************************************************
+ * @brief  Data agnostic compare function pointer that compares 2
+ *
+ * @param pObj           Pointer to the forward list object
+ * @param pListDataVoid  Node data within the list that is compared to user data
+ * @param pUserDataVoid  User data that is compared to the existing list data
+ *
+ * @returns true, if the comparison is met
+ ******************************************************************************/
+typedef bool (*CompareFnPtr_t)(void *pListDataVoid, void *pUserDataVoid);
 
 typedef struct FwdList_Node_t
 {

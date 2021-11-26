@@ -11,6 +11,8 @@
  *============================================================================*/
 #include "forward_list.h"
 
+FwdList_Node_t *FwdList_GetNode(FwdList_t *pObj, CompareFnPtr_t pCompFn,
+                                                  void *pDataInVoid);
 void            FreeList_PushFront(FwdList_t *pObj, FwdList_Node_t *pNode);
 FwdList_Node_t *FreeList_PopFront(FwdList_t *pObj);
 bool            FreeList_IsEmpty(FwdList_t *pObj);
@@ -116,6 +118,40 @@ FwdList_Error_e FwdList_PushBack(FwdList_t *pObj, void *pDataInVoid)
 
         pObj->pTail         = pNode;
         pObj->pTail->pNext  = NULL;
+    }
+
+    return err;
+}
+
+FwdList_Error_e FwdList_Insert(FwdList_t *pObj, CompareFnPtr_t pCompFn,
+                                                void *pDataInVoid)
+{
+    FwdList_Error_e err = FwdList_Error_None;
+    FwdList_Node_t *pFoundNode = FwdList_GetNode(pObj, pCompFn, pDataInVoid);
+
+    if (pFoundNode == NULL)
+    {
+        err = FwdList_PushFront(pObj, pDataInVoid);
+    }
+    else
+    {
+        FwdList_Node_t *pNewNode = FreeList_PopFront(pObj);
+
+        if (pNewNode == NULL)
+        {
+            err = FwdList_Error;
+        }
+        else
+        {
+            /* Push the data into the list one byte at a time */
+            for (size_t byte = 0; byte < pObj->dataSize; byte++)
+            {
+                pNewNode->pData[byte] = ((uint8_t *)pDataInVoid)[byte];
+            }
+
+            pNewNode->pNext  = pFoundNode->pNext;
+            pFoundNode->pNext = pNewNode;
+        }
     }
 
     return err;
@@ -235,6 +271,34 @@ FwdList_Error_e FwdList_PeekBack(FwdList_t *pObj, void *pDataOutVoid)
 /*============================================================================*
  *                     P R I V A T E    F U N C T I O N S                     *
  *============================================================================*/
+
+/*******************************************************************************
+ * @brief  Gets the node prior the node that trips the compare function.
+ *
+ * @param pObj         Pointer to the forward list object
+ * @param pCompFn      Caller defined compare function that determines which
+ *                     node to get. See function signature for `CompareFnPtr_t`.
+ * @param pDataInVoid  Pointer to the data that will be used in the comparison
+ *
+ * @returns forward list error flag
+ ******************************************************************************/
+FwdList_Node_t *FwdList_GetNode(FwdList_t *pObj, CompareFnPtr_t pCompFn,
+                                                 void *pDataInVoid)
+{
+    /* Find the current and previous node that trips the compare function */
+    FwdList_Node_t *pCurNode = pObj->pHead, *pPrevNode = NULL;
+    while (pCurNode != NULL)
+    {
+        if (pCompFn(pCurNode->pData, pDataInVoid))
+        {
+            break;
+        }
+        pPrevNode = pCurNode;
+        pCurNode = pCurNode->pNext;
+    }
+
+    return pPrevNode;
+}
 
 void FreeList_PushFront(FwdList_t *pObj, FwdList_Node_t *pNode)
 {
