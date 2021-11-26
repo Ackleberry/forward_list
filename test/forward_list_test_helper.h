@@ -1,8 +1,11 @@
-#ifndef DEQUE_TEST_HELPER_H_INCLUDED
-#define DEQUE_TEST_HELPER_H_INCLUDED
+#ifndef FORWARD_LIST_TEST_HELPER_H_INCLUDED
+#define FORWARD_LIST_TEST_HELPER_H_INCLUDED
 
-#include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include "forward_list_test_helper_t.h"
 
-#define ELEMENTS_IN(array)    ( sizeof(array) / sizeof(array[0]) )
+bool TestHelper_OrderNumUp(void *pListDataVoid, void *pUserDataVoid);
+bool TestHelper_OrderNumDown(void *pListDataVoid, void *pUserDataVoid);
 
-#endif /* DEQUE_TEST_HELPER_H_INCLUDED */
+#endif /* FORWARD_LIST_TEST_HELPER_H_INCLUDED */
