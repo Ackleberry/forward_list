@@ -963,7 +963,7 @@ TEST List_can_empty_a_full_buffer_of_4_byte_data_types_by_push_back_and_pop_back
     PASS();
 }
 
-TEST List_can_partially_fill_and_empty_multiple_times()
+TEST List_can_partially_fill_and_empty_multiple_times(void)
 {
     /*****************    Arrange    *****************/
     FwdList_t      list;
