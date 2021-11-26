@@ -655,6 +655,74 @@ TEST List_can_peek_back_without_memory_leak(void)
     PASS();
 }
 
+TEST List_can_insert_a_number_in_ascending_order(void)
+{
+    /*****************    Arrange    *****************/
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[5];
+    uint32_t       dataBuf[5];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn[5] = { 11, 3, 4, 8, 9 };
+    FwdList_Insert(&list, TestHelper_OrderNumUp, &dataIn[0]);
+    FwdList_Insert(&list, TestHelper_OrderNumUp, &dataIn[1]);
+    FwdList_Insert(&list, TestHelper_OrderNumUp, &dataIn[2]);
+    FwdList_Insert(&list, TestHelper_OrderNumUp, &dataIn[3]);
+
+    /*****************     Act       *****************/
+    FwdList_Insert(&list, TestHelper_OrderNumUp, &dataIn[4]);
+
+    /*****************    Assert     *****************/
+    uint32_t dataOut[5] = { 0 };
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[0]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[1]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[2]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[3]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[4]));
+    ASSERT_EQ(3, dataOut[0]);
+    ASSERT_EQ(4, dataOut[1]);
+    ASSERT_EQ(8, dataOut[2]);
+    ASSERT_EQ(9, dataOut[3]);
+    ASSERT_EQ(11, dataOut[4]);
+
+    PASS();
+}
+
+TEST List_can_insert_a_number_in_decending_order(void)
+{
+    /*****************    Arrange    *****************/
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[5];
+    uint32_t       dataBuf[5];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn[5] = { 11, 3, 4, 8, 5 };
+    FwdList_Insert(&list, TestHelper_OrderNumDown, &dataIn[0]);
+    FwdList_Insert(&list, TestHelper_OrderNumDown, &dataIn[1]);
+    FwdList_Insert(&list, TestHelper_OrderNumDown, &dataIn[2]);
+    FwdList_Insert(&list, TestHelper_OrderNumDown, &dataIn[3]);
+
+    /*****************     Act       *****************/
+    FwdList_Insert(&list, TestHelper_OrderNumDown, &dataIn[4]);
+
+    /*****************    Assert     *****************/
+    uint32_t dataOut[5] = { 0 };
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[0]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[1]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[2]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[3]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[4]));
+    ASSERT_EQ(11, dataOut[0]);
+    ASSERT_EQ(8, dataOut[1]);
+    ASSERT_EQ(5, dataOut[2]);
+    ASSERT_EQ(4, dataOut[3]);
+    ASSERT_EQ(3, dataOut[4]);
+
+    PASS();
+}
+
 TEST List_can_empty_a_full_buffer_of_1_byte_data_types_by_push_back_and_pop_front(void)
 {
     /*****************    Arrange    *****************/
@@ -1046,6 +1114,9 @@ SUITE(FwdList_Suite)
     RUN_TEST(List_can_peek_at_next_element_to_be_back_popped_when_pushed_from_front);
     RUN_TEST(List_can_peek_front_without_memory_leak);
     RUN_TEST(List_can_peek_back_without_memory_leak);
+
+    RUN_TEST(List_can_insert_a_number_in_ascending_order);
+    RUN_TEST(List_can_insert_a_number_in_decending_order);
 
     /* Integration Tests */
     RUN_TEST(List_can_empty_a_full_buffer_of_1_byte_data_types_by_push_back_and_pop_front);
