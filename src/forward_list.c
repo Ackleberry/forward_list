@@ -149,7 +149,7 @@ FwdList_Error_e FwdList_Insert(FwdList_t *pObj, CompareFnPtr_t pCompFn,
                 pNewNode->pData[byte] = ((uint8_t *)pDataInVoid)[byte];
             }
 
-            pNewNode->pNext  = pFoundNode->pNext;
+            pNewNode->pNext   = pFoundNode->pNext;
             pFoundNode->pNext = pNewNode;
         }
     }
