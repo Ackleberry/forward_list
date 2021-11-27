@@ -300,6 +300,17 @@ FwdList_Node_t *FwdList_GetNode(FwdList_t *pObj, CompareFnPtr_t pCompFn,
     return pPrevNode;
 }
 
+/*******************************************************************************
+ * @brief  Pushes data onto the front of the free list
+ *
+ * @details  This function emulates free(). Since this linked list is
+ *           statically allocated we must keep track of the free nodes.
+ *
+ * @param pObj         Pointer to the forward list object
+ * @param pDataInVoid  Pointer to the data that will be pushed
+ *
+ * @returns forward list error flag
+ ******************************************************************************/
 void FreeList_PushFront(FwdList_t *pObj, FwdList_Node_t *pNode)
 {
     if (pNode != NULL)
@@ -318,6 +329,17 @@ void FreeList_PushFront(FwdList_t *pObj, FwdList_Node_t *pNode)
     }
 }
 
+/*******************************************************************************
+ * @brief  Pops data member off the front of the free list
+ *
+ * @details  This function emulates malloc(). Since this linked list is
+ *           statically allocated we must keep track of the free nodes.
+ *
+ * @param pObj          Pointer to the forward list object
+ * @param pDataOutVoid  Pointer to the data that will be popped
+ *
+ * @returns forward list error flag
+ ******************************************************************************/
 FwdList_Node_t *FreeList_PopFront(FwdList_t *pObj)
 {
     FwdList_Node_t *pFreeNode;
@@ -346,11 +368,25 @@ FwdList_Node_t *FreeList_PopFront(FwdList_t *pObj)
     return pFreeNode;
 }
 
+/*******************************************************************************
+ * @brief  Check if the free list is empty
+ *
+ * @param pObj  Pointer to the forward list object
+ *
+ * @returns true if empty
+ ******************************************************************************/
 bool FreeList_IsEmpty(FwdList_t *pObj)
 {
     return ((pObj->pFreeHead == NULL) && (pObj->pFreeTail == NULL));
 }
 
+/*******************************************************************************
+ * @brief Check if the free list is full
+ *
+ * @param pObj  Pointer to the forward list object
+ *
+ * @returns true if full
+ ******************************************************************************/
 bool FreeList_IsFull(FwdList_t *pObj)
 {
     return FwdList_IsEmpty(pObj);
