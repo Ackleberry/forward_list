@@ -36,17 +36,6 @@ typedef enum FwdList_Error_e
  *                             S T R U C T U R E S                            *
  *============================================================================*/
 
-/*******************************************************************************
- * @brief  Data agnostic compare function pointer that compares 2
- *
- * @param pObj           Pointer to the forward list object
- * @param pListDataVoid  Node data within the list that is compared to user data
- * @param pUserDataVoid  User data that is compared to the existing list data
- *
- * @returns true, if the comparison is met
- ******************************************************************************/
-typedef bool (*CompareFnPtr_t)(void *pListDataVoid, void *pUserDataVoid);
-
 typedef struct FwdList_Node_t
 {
     struct FwdList_Node_t *pNext;
@@ -70,5 +59,20 @@ typedef struct FwdList_t
     size_t          dataBufSize;    /*!< Size of the data buffer */
     size_t          dataSize;       /*!< Size of the data type to be stored */
 } FwdList_t;
+
+/*============================================================================*
+ *                     F U N C T I O N    P O I N T E R S                     *
+ *============================================================================*/
+
+/*******************************************************************************
+ * @brief  Data agnostic compare function pointer that compares 2
+ *
+ * @param pObj           Pointer to the forward list object
+ * @param pListDataVoid  Node data within the list that is compared to user data
+ * @param pUserDataVoid  User data that is compared to the existing list data
+ *
+ * @returns true, if the comparison is met
+ ******************************************************************************/
+typedef bool (*CompareFnPtr_t)(void *pListDataVoid, void *pUserDataVoid);
 
 #endif /* FORWARD_LIST_T_H_INCLUDED */
