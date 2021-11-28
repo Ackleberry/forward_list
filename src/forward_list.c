@@ -277,25 +277,23 @@ FwdList_Error_e FwdList_Reverse(FwdList_t *pObj)
 {
     FwdList_Error_e err = FwdList_Error_None;
 
-    if ((FwdList_IsEmpty(pObj) == false) && (pObj->pHead != pObj->pTail))
+    FwdList_Node_t *pPrev = NULL;
+    FwdList_Node_t *pCurr = NULL;
+    FwdList_Node_t *pNext = pObj->pHead;
+    while (pNext != NULL)
     {
-        FwdList_Node_t *pTemp = pObj->pHead;
-        pObj->pHead = pObj->pTail;
-        pObj->pTail = pTemp;
+        /* Advance cursors */
+        pPrev = pCurr;
+        pCurr = pNext;
+        pNext = pNext->pNext;
 
-        FwdList_Node_t *pPrev = NULL;
-        FwdList_Node_t *pCurr = NULL;
-        FwdList_Node_t *pNext = pObj->pTail;
-        do
-        {
-            pPrev = pCurr;
-            pCurr = pNext;
-            pNext = pNext->pNext;
-
-            pCurr->pNext = pPrev;
-        } while (pNext != NULL);
-
+        /* Reverse current node */
+        pCurr->pNext = pPrev;
     }
+
+    /* Update head and tail pointers */
+    pObj->pTail = pObj->pHead;
+    pObj->pHead = pCurr;
 
     return err;
 }
