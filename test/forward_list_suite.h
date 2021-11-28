@@ -906,10 +906,10 @@ TEST List_can_insert_after_a_specified_condition(void)
     FwdList_PushBack(&list, &dataIn[1]);
     FwdList_PushBack(&list, &dataIn[2]);
     FwdList_PushBack(&list, &dataIn[3]);
-    TestHelper_PrintList(&list);
+
     /*****************     Act       *****************/
     FwdList_Insert(&list, TestHelper_AddAfter, &dataIn[4]);
-    TestHelper_PrintList(&list);
+
     /*****************    Assert     *****************/
     uint32_t dataOut[5] = { 0 };
 
