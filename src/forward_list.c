@@ -273,6 +273,33 @@ FwdList_Error_e FwdList_PeekBack(FwdList_t *pObj, void *pDataOutVoid)
     return err;
 }
 
+FwdList_Error_e FwdList_Reverse(FwdList_t *pObj)
+{
+    FwdList_Error_e err = FwdList_Error_None;
+
+    if ((FwdList_IsEmpty(pObj) == false) && (pObj->pHead != pObj->pTail))
+    {
+        FwdList_Node_t *pTemp = pObj->pHead;
+        pObj->pHead = pObj->pTail;
+        pObj->pTail = pTemp;
+
+        FwdList_Node_t *pPrev = NULL;
+        FwdList_Node_t *pCurr = NULL;
+        FwdList_Node_t *pNext = pObj->pTail;
+        do
+        {
+            pPrev = pCurr;
+            pCurr = pNext;
+            pNext = pNext->pNext;
+
+            pCurr->pNext = pPrev;
+        } while (pNext != NULL);
+
+    }
+
+    return err;
+}
+
 /*============================================================================*
  *                     P R I V A T E    F U N C T I O N S                     *
  *============================================================================*/

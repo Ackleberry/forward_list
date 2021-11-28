@@ -146,4 +146,13 @@ FwdList_Error_e FwdList_PeekFront(FwdList_t *pObj, void *pDataOutVoid);
  ******************************************************************************/
 FwdList_Error_e FwdList_PeekBack(FwdList_t *pObj, void *pDataOutVoid);
 
+/*******************************************************************************
+ * @brief  Reverses the node order of the forward list
+ *
+ * @param  pObj          Pointer to the forward list object
+ *
+ * @returns forward list error flag
+ ******************************************************************************/
+FwdList_Error_e FwdList_Reverse(FwdList_t *pObj);
+
 #endif /* FORWARD_LIST_H_INCLUDED */

@@ -932,6 +932,161 @@ TEST List_can_insert_after_a_specified_condition(void)
     PASS();
 }
 
+TEST List_can_reverse_a_list_with_0_nodes(void)
+{
+    /*****************    Arrange    *****************/
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[5];
+    uint32_t       dataBuf[5];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    /*****************     Act       *****************/
+    FwdList_Error_e err = FwdList_Reverse(&list);
+
+    /*****************    Assert     *****************/
+    ASSERT_EQ(FwdList_Error_None, err);
+    ASSERT_EQ(true, FwdList_IsEmpty(&list));
+
+    PASS();
+}
+
+TEST List_can_reverse_a_list_with_1_nodes(void)
+{
+    /*****************    Arrange    *****************/
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[5];
+    uint32_t       dataBuf[5];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn[1] = { 11 };
+    FwdList_PushBack(&list, &dataIn[0]);
+
+    /*****************     Act       *****************/
+    FwdList_Error_e err = FwdList_Reverse(&list);
+
+    /*****************    Assert     *****************/
+    uint32_t dataOut[1] = { 0 };
+    ASSERT_EQ(FwdList_Error_None, err);
+    ASSERT_EQ(false, FwdList_IsEmpty(&list));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[0]));
+    ASSERT_EQ(11, dataOut[0]);
+
+    PASS();
+}
+
+TEST List_can_reverse_a_list_with_2_nodes(void)
+{
+    /*****************    Arrange    *****************/
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[5];
+    uint32_t       dataBuf[5];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn[2] = { 11, 32 };
+    FwdList_PushBack(&list, &dataIn[0]);
+    FwdList_PushBack(&list, &dataIn[1]);
+
+    /*****************     Act       *****************/
+    FwdList_Error_e err = FwdList_Reverse(&list);
+
+    /*****************    Assert     *****************/
+    uint32_t dataOut[2] = { 0 };
+    ASSERT_EQ(FwdList_Error_None, err);
+    ASSERT_EQ(false, FwdList_IsEmpty(&list));
+    /* Testing front and back asserts head and tail are updated properly */
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[0]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopBack(&list, &dataOut[1]));
+    ASSERT_EQ(32, dataOut[0]);
+    ASSERT_EQ(11, dataOut[1]);
+
+    PASS();
+}
+
+TEST List_can_reverse_a_list_with_4_nodes(void)
+{
+    /*****************    Arrange    *****************/
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[5];
+    uint32_t       dataBuf[5];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn[4] = { 11, 32, 5, 99 };
+    FwdList_PushBack(&list, &dataIn[0]);
+    FwdList_PushBack(&list, &dataIn[1]);
+    FwdList_PushBack(&list, &dataIn[2]);
+    FwdList_PushBack(&list, &dataIn[3]);
+
+    /*****************     Act       *****************/
+    FwdList_Error_e err = FwdList_Reverse(&list);
+
+    /*****************    Assert     *****************/
+    uint32_t dataOut[4] = { 0 };
+    ASSERT_EQ(FwdList_Error_None, err);
+    ASSERT_EQ(false, FwdList_IsEmpty(&list));
+    /* Testing front and back asserts head and tail are updated properly */
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[0]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[1]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[2]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopBack(&list, &dataOut[3]));
+    ASSERT_EQ(99, dataOut[0]);
+    ASSERT_EQ(5, dataOut[1]);
+    ASSERT_EQ(32, dataOut[2]);
+    ASSERT_EQ(11, dataOut[3]);
+
+    PASS();
+}
+
+TEST List_can_reverse_a_list_with_8_nodes(void)
+{
+    /*****************    Arrange    *****************/
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[8];
+    uint32_t       dataBuf[8];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn[8] = { 11, 32, 5, 99, 2, 7, 81, 42};
+    FwdList_PushBack(&list, &dataIn[0]);
+    FwdList_PushBack(&list, &dataIn[1]);
+    FwdList_PushBack(&list, &dataIn[2]);
+    FwdList_PushBack(&list, &dataIn[3]);
+    FwdList_PushBack(&list, &dataIn[4]);
+    FwdList_PushBack(&list, &dataIn[5]);
+    FwdList_PushBack(&list, &dataIn[6]);
+    FwdList_PushBack(&list, &dataIn[7]);
+
+    /*****************     Act       *****************/
+    FwdList_Error_e err = FwdList_Reverse(&list);
+
+    /*****************    Assert     *****************/
+    uint32_t dataOut[8] = { 0 };
+    ASSERT_EQ(FwdList_Error_None, err);
+    ASSERT_EQ(false, FwdList_IsEmpty(&list));
+    /* Testing front and back asserts head and tail are updated properly */
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[0]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[1]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[2]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[3]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[4]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[5]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[6]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopBack(&list, &dataOut[7]));
+    ASSERT_EQ(42, dataOut[0]);
+    ASSERT_EQ(81, dataOut[1]);
+    ASSERT_EQ(7, dataOut[2]);
+    ASSERT_EQ(2, dataOut[3]);
+    ASSERT_EQ(99, dataOut[4]);
+    ASSERT_EQ(5, dataOut[5]);
+    ASSERT_EQ(32, dataOut[6]);
+    ASSERT_EQ(11, dataOut[7]);
+
+    PASS();
+}
+
 TEST List_can_empty_a_full_buffer_of_1_byte_data_types_by_push_back_and_pop_front(void)
 {
     /*****************    Arrange    *****************/
@@ -1330,6 +1485,12 @@ SUITE(FwdList_Suite)
     RUN_TEST(List_can_group_even_and_odd_numbers_in_ascending_order);
     RUN_TEST(List_can_group_even_and_odd_numbers_in_decending_order);
     RUN_TEST(List_can_insert_after_a_specified_condition);
+
+    RUN_TEST(List_can_reverse_a_list_with_0_nodes);
+    RUN_TEST(List_can_reverse_a_list_with_1_nodes);
+    RUN_TEST(List_can_reverse_a_list_with_2_nodes);
+    RUN_TEST(List_can_reverse_a_list_with_4_nodes);
+    RUN_TEST(List_can_reverse_a_list_with_8_nodes);
 
     /* Integration Tests */
     RUN_TEST(List_can_empty_a_full_buffer_of_1_byte_data_types_by_push_back_and_pop_front);
