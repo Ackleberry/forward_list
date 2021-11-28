@@ -93,7 +93,8 @@ FwdList_Error_e FwdList_PushBack(FwdList_t *pObj, void *pDataInVoid);
  * @param pObj         Pointer to the forward list object
  * @param pCompFn      Caller defined compare function that determines which
  *                     node to get. See function signature for `CompareFnPtr_t`.
- * @param pDataInVoid  Pointer to the data that will be used in the comparison
+ * @param pDataInVoid  Pointer to the data that will be used within the compare
+ *                     function
  *
  * @returns forward list error flag
  ******************************************************************************/
