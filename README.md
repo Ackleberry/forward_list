@@ -1,4 +1,4 @@
-# Linked List
+# Forward List - A Singly Linked List
 
 Features:
 
