@@ -675,11 +675,18 @@ TEST List_can_insert_a_number_in_ascending_order(void)
 
     /*****************    Assert     *****************/
     uint32_t dataOut[5] = { 0 };
+
+    /* Testing front and back asserts head and tail are updated properly */
+    ASSERT_EQ(FwdList_Error_None, FwdList_PeekFront(&list, &dataOut[0]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PeekBack(&list, &dataOut[1]));
+    ASSERT_EQ(3,  dataOut[0]);
+    ASSERT_EQ(11, dataOut[1]);
+
     ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[0]));
     ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[1]));
     ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[2]));
     ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[3]));
-    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[4]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopBack(&list, &dataOut[4]));
     ASSERT_EQ(3, dataOut[0]);
     ASSERT_EQ(4, dataOut[1]);
     ASSERT_EQ(8, dataOut[2]);
@@ -698,7 +705,7 @@ TEST List_can_insert_a_number_in_decending_order(void)
     FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
                         &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
 
-    uint32_t dataIn[5] = { 11, 3, 4, 8, 5 };
+    uint32_t dataIn[5] = { 3, 7, 11, 8, 1 };
     FwdList_Insert(&list, TestHelper_OrderNumDown, &dataIn[0]);
     FwdList_Insert(&list, TestHelper_OrderNumDown, &dataIn[1]);
     FwdList_Insert(&list, TestHelper_OrderNumDown, &dataIn[2]);
@@ -709,16 +716,218 @@ TEST List_can_insert_a_number_in_decending_order(void)
 
     /*****************    Assert     *****************/
     uint32_t dataOut[5] = { 0 };
+
+    /* Testing front and back asserts head and tail are updated properly */
+    ASSERT_EQ(FwdList_Error_None, FwdList_PeekFront(&list, &dataOut[0]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PeekBack(&list, &dataOut[1]));
+    ASSERT_EQ(11,  dataOut[0]);
+    ASSERT_EQ(1, dataOut[1]);
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[0]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[1]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[2]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[3]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopBack(&list, &dataOut[4]));
+    ASSERT_EQ(11, dataOut[0]);
+    ASSERT_EQ(8, dataOut[1]);
+    ASSERT_EQ(7, dataOut[2]);
+    ASSERT_EQ(3, dataOut[3]);
+    ASSERT_EQ(1, dataOut[4]);
+
+    PASS();
+}
+
+TEST List_can_can_group_even_and_odd_numbers_in_the_order_they_arrive(void)
+{
+    /*****************    Arrange    *****************/
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[9];
+    uint32_t       dataBuf[9];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn[9] = { 1, 2, 3, 4, 5, 4, 3, 2, 1 };
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOdd, &dataIn[0]);
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOdd, &dataIn[1]);
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOdd, &dataIn[2]);
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOdd, &dataIn[3]);
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOdd, &dataIn[4]);
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOdd, &dataIn[5]);
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOdd, &dataIn[6]);
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOdd, &dataIn[7]);
+
+    /*****************     Act       *****************/
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOdd, &dataIn[8]);
+
+    /*****************    Assert     *****************/
+    uint32_t dataOut[9] = { 0 };
+
+    /* Testing front and back asserts head and tail are updated properly */
+    ASSERT_EQ(FwdList_Error_None, FwdList_PeekFront(&list, &dataOut[0]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PeekBack(&list, &dataOut[1]));
+    ASSERT_EQ(2, dataOut[0]);
+    ASSERT_EQ(1, dataOut[1]);
     ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[0]));
     ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[1]));
     ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[2]));
     ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[3]));
     ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[4]));
-    ASSERT_EQ(11, dataOut[0]);
-    ASSERT_EQ(8, dataOut[1]);
-    ASSERT_EQ(5, dataOut[2]);
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[5]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[6]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[7]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopBack(&list, &dataOut[8]));
+    ASSERT_EQ(2, dataOut[0]);
+    ASSERT_EQ(4, dataOut[1]);
+    ASSERT_EQ(4, dataOut[2]);
+    ASSERT_EQ(2, dataOut[3]);
+    ASSERT_EQ(1, dataOut[4]);
+    ASSERT_EQ(3, dataOut[5]);
+    ASSERT_EQ(5, dataOut[6]);
+    ASSERT_EQ(3, dataOut[7]);
+    ASSERT_EQ(1, dataOut[8]);
+
+    PASS();
+}
+
+TEST List_can_group_even_and_odd_numbers_in_ascending_order(void)
+{
+    /*****************    Arrange    *****************/
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[9];
+    uint32_t       dataBuf[9];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn[9] = { 1, 2, 3, 4, 5, 4, 3, 2, 1 };
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOddUp, &dataIn[0]);
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOddUp, &dataIn[1]);
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOddUp, &dataIn[2]);
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOddUp, &dataIn[3]);
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOddUp, &dataIn[4]);
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOddUp, &dataIn[5]);
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOddUp, &dataIn[6]);
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOddUp, &dataIn[7]);
+
+    /*****************     Act       *****************/
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOddUp, &dataIn[8]);
+
+    /*****************    Assert     *****************/
+    uint32_t dataOut[9] = { 0 };
+
+    /* Testing front and back asserts head and tail are updated properly */
+    ASSERT_EQ(FwdList_Error_None, FwdList_PeekFront(&list, &dataOut[0]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PeekBack(&list, &dataOut[1]));
+    ASSERT_EQ(2, dataOut[0]);
+    ASSERT_EQ(5, dataOut[1]);
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[0]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[1]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[2]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[3]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[4]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[5]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[6]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[7]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopBack(&list, &dataOut[8]));
+    ASSERT_EQ(2, dataOut[0]);
+    ASSERT_EQ(2, dataOut[1]);
+    ASSERT_EQ(4, dataOut[2]);
     ASSERT_EQ(4, dataOut[3]);
-    ASSERT_EQ(3, dataOut[4]);
+    ASSERT_EQ(1, dataOut[4]);
+    ASSERT_EQ(1, dataOut[5]);
+    ASSERT_EQ(3, dataOut[6]);
+    ASSERT_EQ(3, dataOut[7]);
+    ASSERT_EQ(5, dataOut[8]);
+
+    PASS();
+}
+
+TEST List_can_group_even_and_odd_numbers_in_decending_order(void)
+{
+    /*****************    Arrange    *****************/
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[9];
+    uint32_t       dataBuf[9];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn[9] = { 1, 2, 3, 4, 5, 4, 3, 2, 1 };
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOddDown, &dataIn[0]);
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOddDown, &dataIn[1]);
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOddDown, &dataIn[2]);
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOddDown, &dataIn[3]);
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOddDown, &dataIn[4]);
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOddDown, &dataIn[5]);
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOddDown, &dataIn[6]);
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOddDown, &dataIn[7]);
+
+    /*****************     Act       *****************/
+    FwdList_Insert(&list, TestHelper_GroupEvenAndOddDown, &dataIn[8]);
+
+    /*****************    Assert     *****************/
+    uint32_t dataOut[9] = { 0 };
+
+    /* Testing front and back asserts head and tail are updated properly */
+    ASSERT_EQ(FwdList_Error_None, FwdList_PeekFront(&list, &dataOut[0]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PeekBack(&list, &dataOut[1]));
+    ASSERT_EQ(4, dataOut[0]);
+    ASSERT_EQ(1, dataOut[1]);
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[0]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[1]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[2]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[3]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[4]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[5]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[6]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[7]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopBack(&list, &dataOut[8]));
+    ASSERT_EQ(4, dataOut[0]);
+    ASSERT_EQ(4, dataOut[1]);
+    ASSERT_EQ(2, dataOut[2]);
+    ASSERT_EQ(2, dataOut[3]);
+    ASSERT_EQ(5, dataOut[4]);
+    ASSERT_EQ(3, dataOut[5]);
+    ASSERT_EQ(3, dataOut[6]);
+    ASSERT_EQ(1, dataOut[7]);
+    ASSERT_EQ(1, dataOut[8]);
+
+    PASS();
+}
+
+TEST List_can_insert_after_a_specified_condition(void)
+{
+    /*****************    Arrange    *****************/
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[5];
+    uint32_t       dataBuf[5];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn[5] = { 1, 2, 3, 4, 5 };
+    FwdList_PushBack(&list, &dataIn[0]);
+    FwdList_PushBack(&list, &dataIn[1]);
+    FwdList_PushBack(&list, &dataIn[2]);
+    FwdList_PushBack(&list, &dataIn[3]);
+    TestHelper_PrintList(&list);
+    /*****************     Act       *****************/
+    FwdList_Insert(&list, TestHelper_AddAfter, &dataIn[4]);
+    TestHelper_PrintList(&list);
+    /*****************    Assert     *****************/
+    uint32_t dataOut[5] = { 0 };
+
+    /* Testing front and back asserts head and tail are updated properly */
+    ASSERT_EQ(FwdList_Error_None, FwdList_PeekFront(&list, &dataOut[0]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PeekBack(&list, &dataOut[1]));
+    ASSERT_EQ(1, dataOut[0]);
+    ASSERT_EQ(4, dataOut[1]);
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[0]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[1]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[2]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[3]));
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[4]));
+    ASSERT_EQ(1, dataOut[0]);
+    ASSERT_EQ(2, dataOut[1]);
+    ASSERT_EQ(3, dataOut[2]);
+    ASSERT_EQ(5, dataOut[3]);
+    ASSERT_EQ(4, dataOut[4]);
 
     PASS();
 }
@@ -1117,6 +1326,10 @@ SUITE(FwdList_Suite)
 
     RUN_TEST(List_can_insert_a_number_in_ascending_order);
     RUN_TEST(List_can_insert_a_number_in_decending_order);
+    RUN_TEST(List_can_can_group_even_and_odd_numbers_in_the_order_they_arrive);
+    RUN_TEST(List_can_group_even_and_odd_numbers_in_ascending_order);
+    RUN_TEST(List_can_group_even_and_odd_numbers_in_decending_order);
+    RUN_TEST(List_can_insert_after_a_specified_condition);
 
     /* Integration Tests */
     RUN_TEST(List_can_empty_a_full_buffer_of_1_byte_data_types_by_push_back_and_pop_front);

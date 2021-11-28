@@ -83,10 +83,12 @@ FwdList_Error_e FwdList_PushFront(FwdList_t *pObj, void *pDataInVoid);
 FwdList_Error_e FwdList_PushBack(FwdList_t *pObj, void *pDataInVoid);
 
 /*******************************************************************************
- * @brief  Inserts data before a desired node in the linked list
+ * @brief  Inserts data into the linked list
  *
  * @details  For an insert to take place, a compare function is needed to help
- *           find the desired node to perform the insertion on.
+ *           find the desired node to perform the insertion on. Depending on the
+ *           compare functions return value, the insertion can be before or
+ *           after the found node.
  *
  * @param pObj         Pointer to the forward list object
  * @param pCompFn      Caller defined compare function that determines which

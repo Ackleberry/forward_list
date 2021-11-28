@@ -151,6 +151,11 @@ FwdList_Error_e FwdList_Insert(FwdList_t *pObj, CompareFnPtr_t pCompFn,
 
             pNewNode->pNext   = pFoundNode->pNext;
             pFoundNode->pNext = pNewNode;
+
+            if (pNewNode->pNext == NULL)
+            {
+                pObj->pTail = pNewNode;
+            }
         }
     }
 
@@ -273,7 +278,11 @@ FwdList_Error_e FwdList_PeekBack(FwdList_t *pObj, void *pDataOutVoid)
  *============================================================================*/
 
 /*******************************************************************************
- * @brief  Gets the node prior the node that trips the compare function.
+ * @brief   Returns a node based off the provided compare function
+ *
+ * @details Returns the previous or current node based off the the compare
+ *          functions return value. If the compare function isn't satisfied
+ *          (skipped) the last node in the list will be returned.
  *
  * @param pObj         Pointer to the forward list object
  * @param pCompFn      Caller defined compare function that determines which
@@ -285,19 +294,31 @@ FwdList_Error_e FwdList_PeekBack(FwdList_t *pObj, void *pDataOutVoid)
 FwdList_Node_t *FwdList_GetNode(FwdList_t *pObj, CompareFnPtr_t pCompFn,
                                                  void *pDataInVoid)
 {
-    /* Find the current and previous node that trips the compare function */
+    FwdList_Node_t *pFoundNode = NULL;
     FwdList_Node_t *pCurNode = pObj->pHead, *pPrevNode = NULL;
     while (pCurNode != NULL)
     {
-        if (pCompFn(pCurNode->pData, pDataInVoid))
+        FwdList_Insert_e retVal = pCompFn(pCurNode->pData, pDataInVoid);
+        if (retVal == FwdList_Insert_Before)
         {
+            pFoundNode = pPrevNode;
             break;
         }
+        else if (retVal == FwdList_Insert_After)
+        {
+            pFoundNode = pCurNode;
+            break;
+        }
+        else
+        {
+            pFoundNode = pCurNode;
+        }
+
         pPrevNode = pCurNode;
         pCurNode = pCurNode->pNext;
     }
 
-    return pPrevNode;
+    return pFoundNode;
 }
 
 /*******************************************************************************
