@@ -31,6 +31,9 @@ typedef enum FwdList_Error_e
     FwdList_Error      = 1,
 } FwdList_Error_e;
 
+/**
+ * @brief Insert options
+**/
 typedef enum FwdList_Insert_e
 {
     FwdList_Insert_Skip   = 0, /*!< Don't insert, skip to the next node. If last
@@ -45,8 +48,8 @@ typedef enum FwdList_Insert_e
 
 typedef struct FwdList_Node_t
 {
-    struct FwdList_Node_t *pNext;
-    uint8_t               *pData;
+    struct FwdList_Node_t *pNext; /*!< Pointer to the next node in the list */
+    uint8_t               *pData; /*!< Pointer to nodes data */
 } FwdList_Node_t;
 
 /**
@@ -78,7 +81,6 @@ typedef struct FwdList_t
  *          insertion strategy.
  *          Examples: ascending, decending, alphabetical, etc
  *
- * @param pObj           Pointer to the forward list object
  * @param pListDataVoid  Node data within the list that is compared to user data
  * @param pUserDataVoid  User data that is compared to the existing list data
  *

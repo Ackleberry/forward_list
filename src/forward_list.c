@@ -353,10 +353,8 @@ FwdList_Node_t *FwdList_GetNode(FwdList_t *pObj, CompareFnPtr_t pCompFn,
  * @details  This function emulates free(). Since this linked list is
  *           statically allocated we must keep track of the free nodes.
  *
- * @param pObj         Pointer to the forward list object
- * @param pDataInVoid  Pointer to the data that will be pushed
- *
- * @returns forward list error flag
+ * @param pObj   Pointer to the forward list object
+ * @param pNode  Pointer to the node that will be added to the free list
  ******************************************************************************/
 void FreeList_PushFront(FwdList_t *pObj, FwdList_Node_t *pNode)
 {
@@ -382,10 +380,9 @@ void FreeList_PushFront(FwdList_t *pObj, FwdList_Node_t *pNode)
  * @details  This function emulates malloc(). Since this linked list is
  *           statically allocated we must keep track of the free nodes.
  *
- * @param pObj          Pointer to the forward list object
- * @param pDataOutVoid  Pointer to the data that will be popped
+ * @param pObj  Pointer to the forward list object
  *
- * @returns forward list error flag
+ * @returns pointer to the next free node. NULL if no node is available.
  ******************************************************************************/
 FwdList_Node_t *FreeList_PopFront(FwdList_t *pObj)
 {
