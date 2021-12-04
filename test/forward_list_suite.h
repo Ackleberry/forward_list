@@ -188,7 +188,7 @@ TEST List_back_push_fails_due_to_overflow_when_pushed_from_back(void)
     FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
                         &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
 
-    /* Fill the deque up */
+    /* Fill the list up */
     uint8_t dataIn = 5;
     FwdList_PushBack(&list, &dataIn);
     FwdList_PushBack(&list, &dataIn);
@@ -213,7 +213,7 @@ TEST List_back_push_fails_due_to_overflow_when_pushed_from_front(void)
     FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
                         &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
 
-    /* Fill the deque up */
+    /* Fill the list up */
     uint8_t dataIn = 5;
     FwdList_PushFront(&list, &dataIn);
     FwdList_PushFront(&list, &dataIn);
@@ -238,7 +238,7 @@ TEST List_front_push_fails_due_to_overflow_when_pushed_from_back(void)
     FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
                         &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
 
-    /* Fill the deque up */
+    /* Fill the list up */
     uint8_t dataIn = 5;
     FwdList_PushBack(&list, &dataIn);
     FwdList_PushBack(&list, &dataIn);
@@ -263,7 +263,7 @@ TEST List_front_push_fails_due_to_overflow_when_pushed_from_front(void)
     FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
                         &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
 
-    /* Fill the deque up */
+    /* Fill the list up */
     uint8_t dataIn = 5;
     FwdList_PushFront(&list, &dataIn);
     FwdList_PushFront(&list, &dataIn);

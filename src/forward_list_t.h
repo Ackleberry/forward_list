@@ -1,5 +1,5 @@
 /*******************************************************************************
- * @file  deque_t.h
+ * @file  forward_list_t.h
  *
  * @brief  Singly linked list type definitions
  *
