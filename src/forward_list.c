@@ -11,8 +11,9 @@
  *============================================================================*/
 #include "forward_list.h"
 
-FwdList_Node_t *FwdList_GetNode(FwdList_t *pObj, CompareFnPtr_t pCompFn,
-                                                  void *pDataInVoid);
+FwdList_Node_t *FwdList_GetNode(FwdList_t      *pObj,
+                                CompareFnPtr_t  pCompFn,
+                                void           *pDataInVoid);
 void            FreeList_PushFront(FwdList_t *pObj, FwdList_Node_t *pNode);
 FwdList_Node_t *FreeList_PopFront(FwdList_t *pObj);
 bool            FreeList_IsEmpty(FwdList_t *pObj);
