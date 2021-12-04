@@ -2,7 +2,7 @@
 
 Features:
 
-* Object oriented
+* Object oriented style
 * Handles any data type
 * No memcpy(), malloc() or free()
 * Handles buffer sizes up to SIZE_MAX
