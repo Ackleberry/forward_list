@@ -31,17 +31,6 @@ typedef enum FwdList_Error_e
     FwdList_Error      = 1,
 } FwdList_Error_e;
 
-/**
- * @brief Insert options
-**/
-typedef enum FwdList_Insert_e
-{
-    FwdList_Insert_Skip   = 0, /*!< Don't insert, skip to the next node. If last
-                               node is skipped then insert at the end of list */
-    FwdList_Insert_Before = 1, /*!< Insert before node that meets condition */
-    FwdList_Insert_After  = 2, /*!< Insert after node that meets condition */
-} FwdList_Insert_e;
-
 /*============================================================================*
  *                             S T R U C T U R E S                            *
  *============================================================================*/
@@ -69,24 +58,5 @@ typedef struct FwdList_t
     size_t          dataBufSize;    /*!< Size of the data buffer */
     size_t          dataSize;       /*!< Size of the data type to be stored */
 } FwdList_t;
-
-/*============================================================================*
- *                     F U N C T I O N    P O I N T E R S                     *
- *============================================================================*/
-
-/*******************************************************************************
- * @brief   Data agnostic compare function pointer
- *
- * @details The caller must define this function so the module knows the
- *          insertion strategy.
- *          Examples: ascending, decending, alphabetical, etc
- *
- * @param pListDataVoid  Node data within the list that is compared to user data
- * @param pUserDataVoid  User data that is compared to the existing list data
- *
- * @returns FwdList_Insert_e
- ******************************************************************************/
-typedef FwdList_Insert_e (*CompareFnPtr_t)(void *pListDataVoid,
-                                           void *pUserDataVoid);
 
 #endif /* FORWARD_LIST_T_H_INCLUDED */

@@ -11,9 +11,6 @@
  *============================================================================*/
 #include "forward_list.h"
 
-FwdList_Node_t *FwdList_GetNode(FwdList_t      *pObj,
-                                CompareFnPtr_t  pCompFn,
-                                void           *pDataInVoid);
 void            FreeList_PushFront(FwdList_t *pObj, FwdList_Node_t *pNode);
 FwdList_Node_t *FreeList_PopFront(FwdList_t *pObj);
 bool            FreeList_IsEmpty(FwdList_t *pObj);
@@ -54,6 +51,12 @@ bool FwdList_IsEmpty(FwdList_t *pObj)
 bool FwdList_IsFull(FwdList_t *pObj)
 {
     return FreeList_IsEmpty(pObj);
+}
+
+size_t FwdList_Count(FwdList_t *pObj)
+{
+    // Currently we don't keep count of anything
+    return 0;
 }
 
 FwdList_Error_e FwdList_PushFront(FwdList_t *pObj, void *pDataInVoid)
@@ -119,45 +122,6 @@ FwdList_Error_e FwdList_PushBack(FwdList_t *pObj, void *pDataInVoid)
 
         pObj->pTail         = pNode;
         pObj->pTail->pNext  = NULL;
-    }
-
-    return err;
-}
-
-FwdList_Error_e FwdList_Insert(FwdList_t *pObj, CompareFnPtr_t pCompFn,
-                                                void *pDataInVoid)
-{
-    FwdList_Error_e err = FwdList_Error_None;
-    FwdList_Node_t *pFoundNode = FwdList_GetNode(pObj, pCompFn, pDataInVoid);
-
-    if (pFoundNode == NULL)
-    {
-        err = FwdList_PushFront(pObj, pDataInVoid);
-    }
-    else
-    {
-        FwdList_Node_t *pNewNode = FreeList_PopFront(pObj);
-
-        if (pNewNode == NULL)
-        {
-            err = FwdList_Error;
-        }
-        else
-        {
-            /* Push the data into the list one byte at a time */
-            for (size_t byte = 0; byte < pObj->dataSize; byte++)
-            {
-                pNewNode->pData[byte] = ((uint8_t *)pDataInVoid)[byte];
-            }
-
-            pNewNode->pNext   = pFoundNode->pNext;
-            pFoundNode->pNext = pNewNode;
-
-            if (pNewNode->pNext == NULL)
-            {
-                pObj->pTail = pNewNode;
-            }
-        }
     }
 
     return err;
@@ -302,50 +266,6 @@ FwdList_Error_e FwdList_Reverse(FwdList_t *pObj)
 /*============================================================================*
  *                     P R I V A T E    F U N C T I O N S                     *
  *============================================================================*/
-
-/*******************************************************************************
- * @brief   Returns a node based off the provided compare function
- *
- * @details Returns the previous or current node based off the the compare
- *          functions return value. If the compare function isn't satisfied
- *          (skipped) the last node in the list will be returned.
- *
- * @param pObj         Pointer to the forward list object
- * @param pCompFn      Caller defined compare function that determines which
- *                     node to get. See function signature for `CompareFnPtr_t`.
- * @param pDataInVoid  Pointer to the data that will be used in the comparison
- *
- * @returns forward list error flag
- ******************************************************************************/
-FwdList_Node_t *FwdList_GetNode(FwdList_t *pObj, CompareFnPtr_t pCompFn,
-                                                 void *pDataInVoid)
-{
-    FwdList_Node_t *pFoundNode = NULL;
-    FwdList_Node_t *pCurNode = pObj->pHead, *pPrevNode = NULL;
-    while (pCurNode != NULL)
-    {
-        FwdList_Insert_e retVal = pCompFn(pCurNode->pData, pDataInVoid);
-        if (retVal == FwdList_Insert_Before)
-        {
-            pFoundNode = pPrevNode;
-            break;
-        }
-        else if (retVal == FwdList_Insert_After)
-        {
-            pFoundNode = pCurNode;
-            break;
-        }
-        else
-        {
-            pFoundNode = pCurNode;
-        }
-
-        pPrevNode = pCurNode;
-        pCurNode = pCurNode->pNext;
-    }
-
-    return pFoundNode;
-}
 
 /*******************************************************************************
  * @brief  Pushes data onto the front of the free list
