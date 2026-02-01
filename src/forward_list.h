@@ -50,15 +50,6 @@ void FwdList_Init(FwdList_t *pObj, void *pNodeBuf, size_t nodeBufSize,
 bool FwdList_IsEmpty(FwdList_t *pObj);
 
 /*******************************************************************************
- * @brief Check if the forward list is full
- *
- * @param pObj  Pointer to the forward list object
- *
- * @returns true if full
- ******************************************************************************/
-bool FwdList_IsFull(FwdList_t *pObj);
-
-/*******************************************************************************
  * @brief Returns the number of elements in the list
  *
  * @param pObj  Pointer to the forward list object
@@ -66,6 +57,15 @@ bool FwdList_IsFull(FwdList_t *pObj);
  * @returns The number of elements in the list
  ******************************************************************************/
 size_t FwdList_Count(FwdList_t *pObj);
+
+/*******************************************************************************
+ * @brief Check if the forward list is full
+ *
+ * @param pObj  Pointer to the forward list object
+ *
+ * @returns true if full
+ ******************************************************************************/
+bool FwdList_IsFull(FwdList_t *pObj);
 
 /*******************************************************************************
  * @brief  Pushes data onto the front of the forward list
@@ -80,18 +80,6 @@ size_t FwdList_Count(FwdList_t *pObj);
 FwdList_Error_e FwdList_PushFront(FwdList_t *pObj, void *pDataInVoid);
 
 /*******************************************************************************
- * @brief  Pushes data onto the back of the forward list
- *
- * @details  This function is equivalent to a Queue_Push()
- *
- * @param pObj         Pointer to the forward list object
- * @param pDataInVoid  Pointer to the data that will be pushed
- *
- * @returns forward list error flag
- ******************************************************************************/
-FwdList_Error_e FwdList_PushBack(FwdList_t *pObj, void *pDataInVoid);
-
-/*******************************************************************************
  * @brief  Pops data member off the front of the forward list
  *
  * @details  This function is equivalent to a Stack_Pop(), or Queue_Pop()
@@ -102,6 +90,18 @@ FwdList_Error_e FwdList_PushBack(FwdList_t *pObj, void *pDataInVoid);
  * @returns forward list error flag
  ******************************************************************************/
 FwdList_Error_e FwdList_PopFront(FwdList_t *pObj, void *pDataOutVoid);
+
+/*******************************************************************************
+ * @brief  Pushes data onto the back of the forward list
+ *
+ * @details  This function is equivalent to a Queue_Push()
+ *
+ * @param pObj         Pointer to the forward list object
+ * @param pDataInVoid  Pointer to the data that will be pushed
+ *
+ * @returns forward list error flag
+ ******************************************************************************/
+FwdList_Error_e FwdList_PushBack(FwdList_t *pObj, void *pDataInVoid);
 
 /*******************************************************************************
  * @brief  Pops data member off the rear of the forward list

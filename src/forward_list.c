@@ -49,14 +49,14 @@ bool FwdList_IsEmpty(FwdList_t *pObj)
     return ((pObj->pHead == NULL) && (pObj->pTail == NULL));
 }
 
-bool FwdList_IsFull(FwdList_t *pObj)
-{
-    return pObj->count == (pObj->nodeBufSize / sizeof(FwdList_Node_t));
-}
-
 size_t FwdList_Count(FwdList_t *pObj)
 {
     return pObj->count;
+}
+
+bool FwdList_IsFull(FwdList_t *pObj)
+{
+    return pObj->count == (pObj->nodeBufSize / sizeof(FwdList_Node_t));
 }
 
 FwdList_Error_e FwdList_PushFront(FwdList_t *pObj, void *pDataInVoid)
@@ -94,6 +94,37 @@ FwdList_Error_e FwdList_PushFront(FwdList_t *pObj, void *pDataInVoid)
     return err;
 }
 
+FwdList_Error_e FwdList_PopFront(FwdList_t *pObj, void *pDataOutVoid)
+{
+    FwdList_Error_e err = FwdList_Error_None;
+
+    if (FwdList_IsEmpty(pObj))
+    {
+        err = FwdList_Error;
+    }
+    else
+    {
+        /* Pop the data off the list one byte at a time */
+        for (size_t byte = 0; byte < pObj->dataSize; byte++)
+        {
+            ((uint8_t *)pDataOutVoid)[byte] = pObj->pHead->pData[byte];
+        }
+
+        FwdList_Node_t *pNewHead = pObj->pHead->pNext;
+        _FwdList_Free(pObj, pObj->pHead);
+        pObj->pHead = pNewHead;
+
+        /* Only 1 node exists, update the tail */
+        if (pObj->pHead == NULL)
+        {
+            pObj->pTail = NULL;
+        }
+        pObj->count--;
+    }
+
+    return err;
+}
+
 FwdList_Error_e FwdList_PushBack(FwdList_t *pObj, void *pDataInVoid)
 {
     FwdList_Error_e err = FwdList_Error_None;
@@ -124,37 +155,6 @@ FwdList_Error_e FwdList_PushBack(FwdList_t *pObj, void *pDataInVoid)
         pObj->pTail         = pNode;
         pObj->pTail->pNext  = NULL;
         pObj->count++;
-    }
-
-    return err;
-}
-
-FwdList_Error_e FwdList_PopFront(FwdList_t *pObj, void *pDataOutVoid)
-{
-    FwdList_Error_e err = FwdList_Error_None;
-
-    if (FwdList_IsEmpty(pObj))
-    {
-        err = FwdList_Error;
-    }
-    else
-    {
-        /* Pop the data off the list one byte at a time */
-        for (size_t byte = 0; byte < pObj->dataSize; byte++)
-        {
-            ((uint8_t *)pDataOutVoid)[byte] = pObj->pHead->pData[byte];
-        }
-
-        FwdList_Node_t *pNewHead = pObj->pHead->pNext;
-        _FwdList_Free(pObj, pObj->pHead);
-        pObj->pHead = pNewHead;
-
-        /* Only 1 node exists, update the tail */
-        if (pObj->pHead == NULL)
-        {
-            pObj->pTail = NULL;
-        }
-        pObj->count--;
     }
 
     return err;
