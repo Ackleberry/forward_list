@@ -331,8 +331,8 @@ FwdList_Node_t *_FwdList_Alloc(FwdList_t *pObj)
     else
     {
         pFreeNode = pObj->pFreeHead;
-        FwdList_Node_t *pNewFreeHead = pObj->pFreeHead->pNext;
-        pObj->pFreeHead->pNext = NULL;
+        FwdList_Node_t *pNewFreeHead = pFreeNode->pNext;
+        pFreeNode->pNext = NULL;
         pObj->pFreeHead = pNewFreeHead;
     }
 
