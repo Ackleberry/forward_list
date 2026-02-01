@@ -91,7 +91,6 @@ FwdList_Error_e FwdList_PushFront(FwdList_t *pObj, void *pDataInVoid);
  ******************************************************************************/
 FwdList_Error_e FwdList_PushBack(FwdList_t *pObj, void *pDataInVoid);
 
-
 /*******************************************************************************
  * @brief  Pops data member off the front of the forward list
  *
