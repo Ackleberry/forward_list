@@ -145,4 +145,21 @@ FwdList_Error_e FwdList_PeekBack(FwdList_t *pObj, void *pDataOutVoid);
  ******************************************************************************/
 FwdList_Error_e FwdList_Reverse(FwdList_t *pObj);
 
+/*******************************************************************************
+ * @brief  Returns an iterator to the beginning of the list
+ *
+ * @param  pObj  Pointer to the forward list object
+ *
+ * @returns Iterator object
+ ******************************************************************************/
+FwdList_Iter_t FwdList_Begin(FwdList_t *pObj);
+
+/*******************************************************************************
+ * @brief  Advances an iterator to the next list item
+ *
+ * @param  pIter  Pointer to the iterator object
+ ******************************************************************************/
+void FwdList_Next(FwdList_Iter_t *pIter);
+
+
 #endif /* FORWARD_LIST_H_INCLUDED */

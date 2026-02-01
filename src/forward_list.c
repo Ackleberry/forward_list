@@ -267,6 +267,27 @@ FwdList_Error_e FwdList_Reverse(FwdList_t *pObj)
     return err;
 }
 
+FwdList_Iter_t FwdList_Begin(FwdList_t *pObj)
+{
+    FwdList_Iter_t iter;
+
+    iter.index = 0;
+    iter.pData = (pObj->pHead != NULL) ? pObj->pHead->pData : NULL;
+    iter._pNext = (pObj->pHead != NULL) ? pObj->pHead->pNext : NULL;
+
+    return iter;
+}
+
+void FwdList_Next(FwdList_Iter_t *pIter)
+{
+    if (pIter != NULL) {
+        pIter->index++;
+        FwdList_Node_t *pNode = (FwdList_Node_t *)pIter->_pNext;
+        pIter->pData = (pNode != NULL) ? pNode->pData : NULL;
+        pIter->_pNext = (pNode != NULL) ? pNode->pNext : NULL;
+    }
+}
+
 /*============================================================================*
  *                     P R I V A T E    F U N C T I O N S                     *
  *============================================================================*/

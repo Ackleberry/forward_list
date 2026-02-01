@@ -42,6 +42,16 @@ typedef struct FwdList_Node_t
 } FwdList_Node_t;
 
 /**
+ * Holds the state of a list iteration
+ */
+typedef struct FwdList_Iter_t
+{
+    size_t          index;  /*!< Current index */
+    void           *pData;  /*!< Pointer to the current data */
+    void           *_pNext; /*!< For internal use only */
+} FwdList_Iter_t;
+
+/**
  * @brief  Singly Linked List Object
  *
  * @note   This object should never be directly manipulated by the caller.

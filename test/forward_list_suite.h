@@ -740,6 +740,39 @@ TEST List_can_peek_back_without_memory_leak(void)
     PASS();
 }
 
+TEST List_can_iterate_through_data(void)
+{
+    /*****************    Arrange    *****************/
+    const size_t   listSize = 4;
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[listSize];
+    uint32_t       dataBuf[listSize];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn[] = { 999, 244, 1500, 1 };
+    uint32_t dataOut[listSize];
+
+    FwdList_PushBack(&list, &dataIn[0]);
+    FwdList_PushBack(&list, &dataIn[1]);
+    FwdList_PushBack(&list, &dataIn[2]);
+    FwdList_PushBack(&list, &dataIn[3]);
+
+    /*****************     Act       *****************/
+    for (FwdList_Iter_t it = FwdList_Begin(&list); it.pData != NULL; FwdList_Next(&it))
+    {
+        dataOut[it.index] = *(uint32_t *)it.pData;
+    }
+
+    /*****************    Assert     *****************/
+    for (size_t x = 0; x < listSize; x++)
+    {
+        ASSERT_EQ(dataIn[x], dataOut[x]);
+    }
+
+    PASS();
+}
+
 TEST List_can_reverse_a_list_with_0_nodes(void)
 {
     /*****************    Arrange    *****************/
@@ -1291,6 +1324,8 @@ SUITE(FwdList_Suite)
     RUN_TEST(List_can_peek_at_next_element_to_be_back_popped_when_pushed_from_front);
     RUN_TEST(List_can_peek_front_without_memory_leak);
     RUN_TEST(List_can_peek_back_without_memory_leak);
+
+    RUN_TEST(List_can_iterate_through_data);
 
     RUN_TEST(List_can_reverse_a_list_with_0_nodes);
     RUN_TEST(List_can_reverse_a_list_with_1_nodes);
