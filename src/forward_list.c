@@ -11,8 +11,8 @@
  *============================================================================*/
 #include "forward_list.h"
 
-void            FreeList_PushFront(FwdList_t *pObj, FwdList_Node_t *pNode);
-FwdList_Node_t *FreeList_PopFront(FwdList_t *pObj);
+void            _FwdList_Free(FwdList_t *pObj, FwdList_Node_t *pNode);
+FwdList_Node_t *_FwdList_Alloc(FwdList_t *pObj);
 
 /*============================================================================*
  *                      P U B L I C    F U N C T I O N S                      *
@@ -34,14 +34,13 @@ void FwdList_Init(FwdList_t *pObj, void *pNodeBuf, size_t nodeBufSize,
     pObj->dataBufSize = dataBufSize;
     pObj->dataSize    = dataSize;
 
-    /* Initailize and push all nodes onto the free list */
+    /* Push all nodes onto the available memory list */
     size_t totalNodes = (pObj->nodeBufSize / sizeof(FwdList_Node_t));
     for (size_t node = 0; node < totalNodes; node++)
     {
-        /* Make each node point to its data section */
+        /* Make each node point to its cooresponding data section */
         pObj->pNodeBuf[node].pData = &pObj->pDataBuf[node * pObj->dataSize];
-
-        FreeList_PushFront(pObj, &pObj->pNodeBuf[node]);
+        _FwdList_Free(pObj, &pObj->pNodeBuf[node]);
     }
 }
 
@@ -64,7 +63,7 @@ FwdList_Error_e FwdList_PushFront(FwdList_t *pObj, void *pDataInVoid)
 {
     FwdList_Error_e err = FwdList_Error_None;
 
-    FwdList_Node_t *pNode = FreeList_PopFront(pObj);
+    FwdList_Node_t *pNode = _FwdList_Alloc(pObj);
 
     if (pNode == NULL)
     {
@@ -99,7 +98,7 @@ FwdList_Error_e FwdList_PushBack(FwdList_t *pObj, void *pDataInVoid)
 {
     FwdList_Error_e err = FwdList_Error_None;
 
-    FwdList_Node_t *pNode = FreeList_PopFront(pObj);
+    FwdList_Node_t *pNode = _FwdList_Alloc(pObj);
 
     if (pNode == NULL)
     {
@@ -147,7 +146,7 @@ FwdList_Error_e FwdList_PopFront(FwdList_t *pObj, void *pDataOutVoid)
         }
 
         FwdList_Node_t *pNewHead = pObj->pHead->pNext;
-        FreeList_PushFront(pObj, pObj->pHead);
+        _FwdList_Free(pObj, pObj->pHead);
         pObj->pHead = pNewHead;
 
         /* Only 1 node exists, update the tail */
@@ -181,7 +180,7 @@ FwdList_Error_e FwdList_PopBack(FwdList_t *pObj, void *pDataOutVoid)
         if (pNewTail->pNext == NULL)
         {
             /* Only 1 node exists */
-            FreeList_PushFront(pObj, pObj->pTail);
+            _FwdList_Free(pObj, pObj->pTail);
             pObj->pHead = NULL;
             pObj->pTail = NULL;
         }
@@ -193,7 +192,7 @@ FwdList_Error_e FwdList_PopBack(FwdList_t *pObj, void *pDataOutVoid)
                 pNewTail = pNewTail->pNext;
             }
 
-            FreeList_PushFront(pObj, pObj->pTail);
+            _FwdList_Free(pObj, pObj->pTail);
             pNewTail->pNext = NULL;
             pObj->pTail = pNewTail;
         }
@@ -273,15 +272,15 @@ FwdList_Error_e FwdList_Reverse(FwdList_t *pObj)
  *============================================================================*/
 
 /*******************************************************************************
- * @brief  Pushes data onto the front of the free list
+ * @brief  Adds a node onto the available memory list
  *
- * @details  This function emulates free(). Since this linked list is
- *           statically allocated we must keep track of the free nodes.
+ * @details  This function emulates free() but operates within the user
+ *           provided memory pool.
  *
  * @param pObj   Pointer to the forward list object
  * @param pNode  Pointer to the node that will be added to the free list
  ******************************************************************************/
-void FreeList_PushFront(FwdList_t *pObj, FwdList_Node_t *pNode)
+void _FwdList_Free(FwdList_t *pObj, FwdList_Node_t *pNode)
 {
     if (pNode != NULL)
     {
@@ -291,16 +290,16 @@ void FreeList_PushFront(FwdList_t *pObj, FwdList_Node_t *pNode)
 }
 
 /*******************************************************************************
- * @brief  Pops data member off the front of the free list
+ * @brief  Removes a node from the available memory list.
  *
- * @details  This function emulates malloc(). Since this linked list is
- *           statically allocated we must keep track of the free nodes.
+ * @details  This function emulates malloc() but operates within the user
+ *           provided memory pool.
  *
  * @param pObj  Pointer to the forward list object
  *
- * @returns pointer to the next free node. NULL if no node is available.
+ * @returns Pointer to the next available node. NULL if no node is available.
  ******************************************************************************/
-FwdList_Node_t *FreeList_PopFront(FwdList_t *pObj)
+FwdList_Node_t *_FwdList_Alloc(FwdList_t *pObj)
 {
     FwdList_Node_t *pFreeNode;
 
