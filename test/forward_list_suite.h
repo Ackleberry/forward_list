@@ -30,7 +30,25 @@ TEST List_can_report_empty(void)
     PASS();
 }
 
-TEST List_can_report_not_full(void)
+TEST List_can_report_not_full_when_emtpy(void)
+{
+    /*****************    Arrange    *****************/
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[4];
+    uint8_t        dataBuf[4];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    /*****************     Act       *****************/
+    bool isFull = FwdList_IsFull(&list);
+
+    /*****************    Assert     *****************/
+    ASSERT_EQ(false, isFull);
+
+    PASS();
+}
+
+TEST List_can_report_not_full_when_partially_full(void)
 {
     /*****************    Arrange    *****************/
     FwdList_t      list;
@@ -40,6 +58,7 @@ TEST List_can_report_not_full(void)
                         &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
 
     uint8_t dataIn = 42;
+    FwdList_PushFront(&list, &dataIn);
     FwdList_PushFront(&list, &dataIn);
 
     /*****************     Act       *****************/
@@ -1167,7 +1186,8 @@ SUITE(FwdList_Suite)
 {
     /* Unit Tests */
     RUN_TEST(List_can_report_empty);
-    RUN_TEST(List_can_report_not_full);
+    RUN_TEST(List_can_report_not_full_when_emtpy);
+    RUN_TEST(List_can_report_not_full_when_partially_full);
 
     RUN_TEST(List_can_report_not_empty_when_pushed_from_back);
     RUN_TEST(List_can_report_not_empty_when_pushed_from_front);
