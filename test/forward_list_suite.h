@@ -160,6 +160,72 @@ TEST List_can_report_full_when_pushed_from_front(void)
     PASS();
 }
 
+TEST List_can_get_count_when_empty(void)
+{
+    /*****************    Arrange    *****************/
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[4];
+    uint8_t        dataBuf[4];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    /*****************     Act       *****************/
+    size_t count = FwdList_Count(&list);
+
+    /*****************    Assert     *****************/
+    ASSERT_EQ(0, count);
+
+    PASS();
+}
+
+TEST List_can_get_count_when_partially_full(void)
+{
+    /*****************    Arrange    *****************/
+    size_t         max_count = 4;
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[max_count];
+    uint8_t        dataBuf[max_count];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint8_t dataIn = 42;
+    FwdList_PushFront(&list, &dataIn);
+    FwdList_PushBack(&list, &dataIn);
+
+    /*****************     Act       *****************/
+    size_t count = FwdList_Count(&list);
+
+    /*****************    Assert     *****************/
+    ASSERT_EQ(2, count);
+
+    PASS();
+}
+
+TEST List_can_get_count_when_full(void)
+{
+    /*****************    Arrange    *****************/
+    size_t         max_count = 4;
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[max_count];
+    uint8_t        dataBuf[max_count];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint8_t dataIn = 42;
+    FwdList_PushFront(&list, &dataIn);
+    FwdList_PushBack(&list, &dataIn);
+    FwdList_PushFront(&list, &dataIn);
+    FwdList_PushBack(&list, &dataIn);
+
+    /*****************     Act       *****************/
+    size_t count = FwdList_Count(&list);
+
+    /*****************    Assert     *****************/
+    ASSERT_EQ(max_count, count);
+
+    PASS();
+}
+
 TEST List_front_pop_fails_if_underflow(void)
 {
     /*****************    Arrange    *****************/
@@ -1194,6 +1260,10 @@ SUITE(FwdList_Suite)
 
     RUN_TEST(List_can_report_full_when_pushed_from_back);
     RUN_TEST(List_can_report_full_when_pushed_from_front);
+
+    RUN_TEST(List_can_get_count_when_empty);
+    RUN_TEST(List_can_get_count_when_partially_full);
+    RUN_TEST(List_can_get_count_when_full);
 
     RUN_TEST(List_front_pop_fails_if_underflow);
     RUN_TEST(List_back_pop_fails_if_underflow);

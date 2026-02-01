@@ -24,10 +24,14 @@ void FwdList_Init(FwdList_t *pObj, void *pNodeBuf, size_t nodeBufSize,
 {
     pObj->pHead       = NULL;
     pObj->pTail       = NULL;
+    pObj->count       = 0;
+
     pObj->pFreeHead   = NULL;
     pObj->pFreeTail   = NULL;
+
     pObj->pNodeBuf    = pNodeBuf;
     pObj->nodeBufSize = nodeBufSize;
+
     pObj->pDataBuf    = pDataBuf;
     pObj->dataBufSize = dataBufSize;
     pObj->dataSize    = dataSize;
@@ -50,13 +54,12 @@ bool FwdList_IsEmpty(FwdList_t *pObj)
 
 bool FwdList_IsFull(FwdList_t *pObj)
 {
-    return FreeList_IsEmpty(pObj);
+    return pObj->count == (pObj->nodeBufSize / sizeof(FwdList_Node_t));
 }
 
 size_t FwdList_Count(FwdList_t *pObj)
 {
-    // Currently we don't keep count of anything
-    return 0;
+    return pObj->count;
 }
 
 FwdList_Error_e FwdList_PushFront(FwdList_t *pObj, void *pDataInVoid)
@@ -88,6 +91,7 @@ FwdList_Error_e FwdList_PushFront(FwdList_t *pObj, void *pDataInVoid)
         }
 
         pObj->pHead = pNode;
+        pObj->count++;
     }
 
     return err;
@@ -122,6 +126,7 @@ FwdList_Error_e FwdList_PushBack(FwdList_t *pObj, void *pDataInVoid)
 
         pObj->pTail         = pNode;
         pObj->pTail->pNext  = NULL;
+        pObj->count++;
     }
 
     return err;
@@ -152,6 +157,7 @@ FwdList_Error_e FwdList_PopFront(FwdList_t *pObj, void *pDataOutVoid)
         {
             pObj->pTail = NULL;
         }
+        pObj->count--;
     }
 
     return err;
@@ -193,6 +199,7 @@ FwdList_Error_e FwdList_PopBack(FwdList_t *pObj, void *pDataOutVoid)
             pNewTail->pNext = NULL;
             pObj->pTail = pNewTail;
         }
+        pObj->count--;
     }
 
     return err;
@@ -353,5 +360,5 @@ bool FreeList_IsEmpty(FwdList_t *pObj)
  ******************************************************************************/
 bool FreeList_IsFull(FwdList_t *pObj)
 {
-    return FwdList_IsEmpty(pObj);
+    return pObj->count == 0;
 }

@@ -50,6 +50,7 @@ typedef struct FwdList_t
 {
     FwdList_Node_t *pHead;          /*!< Head node cursor */
     FwdList_Node_t *pTail;          /*!< Tail node cursor */
+    size_t          count;          /*!< Number of in use nodes */
     FwdList_Node_t *pFreeHead;      /*!< Head cursor for free nodes */
     FwdList_Node_t *pFreeTail;      /*!< Tail cursor for free nodes */
     FwdList_Node_t *pNodeBuf;       /*!< Pointer to the node buffer */

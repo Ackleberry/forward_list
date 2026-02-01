@@ -59,6 +59,15 @@ bool FwdList_IsEmpty(FwdList_t *pObj);
 bool FwdList_IsFull(FwdList_t *pObj);
 
 /*******************************************************************************
+ * @brief Returns the number of elements in the list
+ *
+ * @param pObj  Pointer to the forward list object
+ *
+ * @returns The number of elements in the list
+ ******************************************************************************/
+size_t FwdList_Count(FwdList_t *pObj);
+
+/*******************************************************************************
  * @brief  Pushes data onto the front of the forward list
  *
  * @details  This function is equivalent to a Stack_Push()
