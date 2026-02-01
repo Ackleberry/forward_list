@@ -37,8 +37,8 @@ typedef enum FwdList_Error_e
 
 typedef struct FwdList_Node_t
 {
-    struct FwdList_Node_t *pNext; /*!< Pointer to the next node in the list */
     uint8_t               *pData; /*!< Pointer to nodes data */
+    struct FwdList_Node_t *pNext; /*!< Pointer to the next node in the list */
 } FwdList_Node_t;
 
 /**
