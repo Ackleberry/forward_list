@@ -13,7 +13,6 @@
 
 void            FreeList_PushFront(FwdList_t *pObj, FwdList_Node_t *pNode);
 FwdList_Node_t *FreeList_PopFront(FwdList_t *pObj);
-bool            FreeList_IsEmpty(FwdList_t *pObj);
 
 /*============================================================================*
  *                      P U B L I C    F U N C T I O N S                      *
@@ -27,7 +26,6 @@ void FwdList_Init(FwdList_t *pObj, void *pNodeBuf, size_t nodeBufSize,
     pObj->count       = 0;
 
     pObj->pFreeHead   = NULL;
-    pObj->pFreeTail   = NULL;
 
     pObj->pNodeBuf    = pNodeBuf;
     pObj->nodeBufSize = nodeBufSize;
@@ -287,16 +285,7 @@ void FreeList_PushFront(FwdList_t *pObj, FwdList_Node_t *pNode)
 {
     if (pNode != NULL)
     {
-        if (pObj->pFreeHead == NULL)
-        {
-            pNode->pNext = NULL;
-            pObj->pFreeTail = pNode;
-        }
-        else
-        {
-            pNode->pNext = pObj->pFreeHead;
-        }
-
+        pNode->pNext = (pObj->pFreeHead == NULL) ? NULL : pObj->pFreeHead;
         pObj->pFreeHead = pNode;
     }
 }
@@ -315,7 +304,7 @@ FwdList_Node_t *FreeList_PopFront(FwdList_t *pObj)
 {
     FwdList_Node_t *pFreeNode;
 
-    if (FreeList_IsEmpty(pObj))
+    if (pObj->pFreeHead == NULL)
     {
         pFreeNode = NULL;
     }
@@ -323,42 +312,9 @@ FwdList_Node_t *FreeList_PopFront(FwdList_t *pObj)
     {
         pFreeNode = pObj->pFreeHead;
         FwdList_Node_t *pNewFreeHead = pObj->pFreeHead->pNext;
-
-        if (pNewFreeHead == NULL)
-        {
-            pObj->pFreeTail = NULL;
-        }
-        else
-        {
-            pObj->pFreeHead->pNext = NULL;
-        }
-
+        pObj->pFreeHead->pNext = NULL;
         pObj->pFreeHead = pNewFreeHead;
     }
 
     return pFreeNode;
-}
-
-/*******************************************************************************
- * @brief  Check if the free list is empty
- *
- * @param pObj  Pointer to the forward list object
- *
- * @returns true if empty
- ******************************************************************************/
-bool FreeList_IsEmpty(FwdList_t *pObj)
-{
-    return ((pObj->pFreeHead == NULL) && (pObj->pFreeTail == NULL));
-}
-
-/*******************************************************************************
- * @brief Check if the free list is full
- *
- * @param pObj  Pointer to the forward list object
- *
- * @returns true if full
- ******************************************************************************/
-bool FreeList_IsFull(FwdList_t *pObj)
-{
-    return pObj->count == 0;
 }
