@@ -42,13 +42,15 @@ typedef struct FwdList_Node_t
 } FwdList_Node_t;
 
 /**
- * Holds the state of a list iteration
+ * Holds the state of a list iteration. There should only be 1 active iterator
+ * at a time.
  */
 typedef struct FwdList_Iter_t
 {
     size_t          index;  /*!< Current index */
     void           *pData;  /*!< Pointer to the current data */
-    void           *_pNext; /*!< For internal use only */
+    void           *_pCurr; /*!< For internal use only */
+    void           *_pPrev; /*!< For internal use only */
 } FwdList_Iter_t;
 
 /**

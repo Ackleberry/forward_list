@@ -740,6 +740,116 @@ TEST List_can_peek_back_without_memory_leak(void)
     PASS();
 }
 
+TEST List_iterator_begins_with_index_0_and_null_data_if_list_is_empty(void)
+{
+    /*****************    Arrange    *****************/
+    const size_t   listSize = 4;
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[listSize];
+    uint32_t       dataBuf[listSize];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+                        
+    /*****************     Act       *****************/
+    FwdList_Iter_t it = FwdList_Begin(&list);
+
+    /*****************    Assert     *****************/
+    ASSERT_EQ(true, FwdList_IsEmpty(&list));
+    ASSERT_EQ(false, FwdList_IsFull(&list));
+    ASSERT_EQ(0, FwdList_Count(&list));
+    ASSERT_EQ_FMT(0, it.index, "%zu");
+    ASSERT_EQ(NULL, it.pData);
+
+    PASS();
+}
+
+TEST List_iterator_begins_with_index_0_and_data_if_list_is_not_empty(void)
+{
+    /*****************    Arrange    *****************/
+    const size_t   listSize = 4;
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[listSize];
+    uint32_t       dataBuf[listSize];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn[] = { 15 };
+    FwdList_PushFront(&list, &dataIn[0]);    
+    
+    /*****************     Act       *****************/
+    FwdList_Iter_t it = FwdList_Begin(&list);
+
+    /*****************    Assert     *****************/
+    ASSERT_EQ(false, FwdList_IsEmpty(&list));
+    ASSERT_EQ(false, FwdList_IsFull(&list));
+    ASSERT_EQ(1, FwdList_Count(&list));
+    ASSERT_EQ_FMT(0, it.index, "%zu");
+    ASSERT_NEQ(NULL, it.pData);
+
+    PASS();
+}
+
+TEST List_iterator_does_not_advance_if_there_are_no_available_nodes(void)
+{
+    /*****************    Arrange    *****************/
+    const size_t   listSize = 4;
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[listSize];
+    uint32_t       dataBuf[listSize];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));  
+      
+    FwdList_Iter_t it = FwdList_Begin(&list);
+
+    /*****************     Act       *****************/
+    FwdList_Next(&it);
+    FwdList_Next(&it);
+    FwdList_Next(&it);
+
+    /*****************    Assert     *****************/
+    ASSERT_EQ(true, FwdList_IsEmpty(&list));
+    ASSERT_EQ(false, FwdList_IsFull(&list));
+    ASSERT_EQ(0, FwdList_Count(&list));
+    ASSERT_EQ_FMT(0, it.index, "%zu");
+    ASSERT_EQ(NULL, it.pData);
+
+    PASS();
+}
+
+TEST List_iterator_does_advance_if_there_are_available_nodes(void)
+{
+    /*****************    Arrange    *****************/
+    const size_t   listSize = 4;
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[listSize];
+    uint32_t       dataBuf[listSize];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn[] = { 15, 7, 5, 3 };
+    FwdList_PushFront(&list, &dataIn[0]);    
+    FwdList_PushFront(&list, &dataIn[1]);    
+    FwdList_PushFront(&list, &dataIn[2]);    
+    FwdList_PushFront(&list, &dataIn[3]);    
+    FwdList_Iter_t it = FwdList_Begin(&list);
+    
+    /*****************     Act       *****************/
+    FwdList_Next(&it);
+    FwdList_Next(&it);
+    FwdList_Next(&it);
+
+    /*****************    Assert     *****************/
+    ASSERT_EQ(false, FwdList_IsEmpty(&list));
+    ASSERT_EQ(true, FwdList_IsFull(&list));
+    ASSERT_EQ(4, FwdList_Count(&list));
+
+    ASSERT_EQ_FMT(3, it.index, "%zu");
+    ASSERT_NEQ(NULL, it.pData);
+
+    PASS();
+}
+
 TEST List_can_iterate_through_data(void)
 {
     /*****************    Arrange    *****************/
@@ -769,6 +879,125 @@ TEST List_can_iterate_through_data(void)
     {
         ASSERT_EQ(dataIn[x], dataOut[x]);
     }
+
+    PASS();
+}
+
+TEST List_can_insert_data_into_an_empty_list(void)
+{
+    /*****************    Arrange    *****************/
+    const size_t   listSize = 4;
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[listSize];
+    uint32_t       dataBuf[listSize];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t insertData = 7;
+    uint32_t dataOut[listSize];
+
+    /*****************     Act       *****************/
+    FwdList_Iter_t it = FwdList_Begin(&list);
+    FwdList_Insert(&list, &it, &insertData);
+
+    /*****************    Assert     *****************/
+    ASSERT_EQ(false, FwdList_IsEmpty(&list));
+    ASSERT_EQ(false, FwdList_IsFull(&list));
+    ASSERT_EQ(1, FwdList_Count(&list));
+    ASSERT_EQ(0, it.index);
+    ASSERT_EQ(insertData, *(uint32_t *)it.pData);
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[0]));
+    ASSERT_EQ(insertData, dataOut[0]);
+
+    PASS();
+}
+
+TEST List_can_insert_data_into_a_list_with_1_existing_item(void)
+{
+    /*****************    Arrange    *****************/
+    const size_t   listSize = 4;
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[listSize];
+    uint32_t       dataBuf[listSize];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn[] = { 15, 9 };
+    FwdList_Iter_t it = FwdList_Begin(&list);
+    ASSERT_EQ_FMT(0, it.index, "%zu");
+    FwdList_Insert(&list, &it, &dataIn[0]);
+    ASSERT_EQ_FMT(0, it.index, "%zu");
+    
+    /*****************     Act       *****************/
+    FwdList_Error_e err = FwdList_Insert(&list, &it, &dataIn[1]);
+
+    /*****************    Assert     *****************/
+    uint32_t dataOut[listSize];
+    ASSERT_EQ(FwdList_Error_None, err);
+    ASSERT_EQ(false, FwdList_IsEmpty(&list));
+    ASSERT_EQ(false, FwdList_IsFull(&list));
+    ASSERT_EQ(2, FwdList_Count(&list));
+    ASSERT_EQ_FMT(0, it.index, "%zu");
+    ASSERT_EQ(dataIn[1], *(uint32_t *)it.pData);
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[0]));
+    ASSERT_EQ_FMT(dataIn[1], dataOut[0], "%d");
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[1]));
+    ASSERT_EQ_FMT(dataIn[0], dataOut[1], "%d");
+    ASSERT_EQ(true, FwdList_IsEmpty(&list));
+    ASSERT_EQ(false, FwdList_IsFull(&list));
+    ASSERT_EQ(0, FwdList_Count(&list));
+
+    PASS();
+}
+
+TEST List_can_insert_data_into_the_middle_of_a_list(void)
+{
+    /*****************    Arrange    *****************/
+    const size_t   listSize = 5;
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[listSize];
+    uint32_t       dataBuf[listSize];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn[] = { 1000, 100, 10, 1 };
+    FwdList_PushBack(&list, &dataIn[0]);    
+    FwdList_PushBack(&list, &dataIn[1]);    
+    FwdList_PushBack(&list, &dataIn[2]);    
+    FwdList_PushBack(&list, &dataIn[3]);
+    uint32_t insertData = 50;
+    
+    /*****************     Act       *****************/
+    for (FwdList_Iter_t it = FwdList_Begin(&list); it.pData != NULL; FwdList_Next(&it))
+    {
+        if (insertData > *(uint32_t *)it.pData) {
+            FwdList_Insert(&list, &it, &insertData);
+            break;
+        }
+    }
+
+    /*****************    Assert     *****************/
+    ASSERT_EQ(false, FwdList_IsEmpty(&list));
+    ASSERT_EQ(true, FwdList_IsFull(&list));
+    ASSERT_EQ_FMT(5, FwdList_Count(&list), "%zu");
+
+    uint32_t dataOut[listSize];
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[0]));
+    ASSERT_EQ_FMT(dataIn[0], dataOut[0], "%zu");
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[1]));
+    ASSERT_EQ_FMT(dataIn[1], dataOut[1], "%zu");
+
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[2]));
+    ASSERT_EQ_FMT(insertData, dataOut[2], "%zu");
+
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[3]));
+    ASSERT_EQ_FMT(dataIn[2], dataOut[3], "%zu");
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[4]));
+    ASSERT_EQ_FMT(dataIn[3], dataOut[4], "%zu");
+
+    ASSERT_EQ(true, FwdList_IsEmpty(&list));
+    ASSERT_EQ(false, FwdList_IsFull(&list));
+    ASSERT_EQ_FMT(0, FwdList_Count(&list), "%zu");
 
     PASS();
 }
@@ -1325,7 +1554,14 @@ SUITE(FwdList_Suite)
     RUN_TEST(List_can_peek_front_without_memory_leak);
     RUN_TEST(List_can_peek_back_without_memory_leak);
 
+    RUN_TEST(List_iterator_begins_with_index_0_and_null_data_if_list_is_empty);
+    RUN_TEST(List_iterator_begins_with_index_0_and_data_if_list_is_not_empty);
+    RUN_TEST(List_iterator_does_not_advance_if_there_are_no_available_nodes);
+    RUN_TEST(List_iterator_does_advance_if_there_are_available_nodes);
     RUN_TEST(List_can_iterate_through_data);
+    RUN_TEST(List_can_insert_data_into_an_empty_list);
+    RUN_TEST(List_can_insert_data_into_a_list_with_1_existing_item);
+    RUN_TEST(List_can_insert_data_into_the_middle_of_a_list);
 
     RUN_TEST(List_can_reverse_a_list_with_0_nodes);
     RUN_TEST(List_can_reverse_a_list_with_1_nodes);

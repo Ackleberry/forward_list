@@ -161,5 +161,32 @@ FwdList_Iter_t FwdList_Begin(FwdList_t *pObj);
  ******************************************************************************/
 void FwdList_Next(FwdList_Iter_t *pIter);
 
+/*******************************************************************************
+ * @brief  Inserts data before iterator.
+ *
+ * @param pObj         Pointer to the forward list object
+ * @param pIter        Pointer to the list iterator. Updated to the newly
+ *                     inserted data.
+ * @param pDataInVoid  Pointer to the data that will be pushed
+ *
+ * @returns forward list error flag
+ ******************************************************************************/
+FwdList_Error_e FwdList_Insert(FwdList_t *pObj, FwdList_Iter_t *pIter, void *pDataInVoid);
+
+/**
+ * Possible Functions:
+ * FwdList_Remove(<obj>, <pos>)
+
+ * 
+ * Possible Insert/Get/Remove Use Cases:
+ * > We don't want the caller to use get() for iteration since its O(n) and iteration is already O(n), makine O(n^2)
+ * > Best part is removal doesn't have to free()
+ * > Whats the best way to remove items from the list? Iteration? Get/Remove for loop?
+ * > FwdList_PeekFront and FwdList_PeekBack are not really needed if we have get()
+ * > Get() shouldn't really be in the API because it promotes bad iteration practice.
+ * > C++ forward list does not have insert() only insertAfter()
+ * > Use a forward list only if you don't need to insert before
+ * > Doubly linked list in C++ does not have an insert_after() because you can just advance the iterator.
+ */
 
 #endif /* FORWARD_LIST_H_INCLUDED */

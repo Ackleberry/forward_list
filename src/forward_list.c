@@ -273,7 +273,9 @@ FwdList_Iter_t FwdList_Begin(FwdList_t *pObj)
 
     iter.index = 0;
     iter.pData = (pObj->pHead != NULL) ? pObj->pHead->pData : NULL;
-    iter._pNext = (pObj->pHead != NULL) ? pObj->pHead->pNext : NULL;
+
+    iter._pCurr = pObj->pHead;
+    iter._pPrev = NULL;
 
     return iter;
 }
@@ -281,11 +283,53 @@ FwdList_Iter_t FwdList_Begin(FwdList_t *pObj)
 void FwdList_Next(FwdList_Iter_t *pIter)
 {
     if (pIter != NULL) {
-        pIter->index++;
-        FwdList_Node_t *pNode = (FwdList_Node_t *)pIter->_pNext;
-        pIter->pData = (pNode != NULL) ? pNode->pData : NULL;
-        pIter->_pNext = (pNode != NULL) ? pNode->pNext : NULL;
+        /* Advance cursors */
+        pIter->_pPrev = pIter->_pCurr;
+        pIter->_pCurr = (pIter->_pCurr != NULL) ? ((FwdList_Node_t *)pIter->_pCurr)->pNext : NULL;
+
+        pIter->index = (pIter->_pCurr != NULL) ? pIter->index + 1 : pIter->index;
+        pIter->pData = (pIter->_pCurr != NULL) ? ((FwdList_Node_t *)pIter->_pCurr)->pData : NULL;
     }
+}
+
+FwdList_Error_e FwdList_Insert(FwdList_t *pObj, FwdList_Iter_t *pIter, void *pDataInVoid)
+{
+    FwdList_Error_e err = FwdList_Error_None;
+
+    /* Allocate the new node */
+    FwdList_Node_t *pNode = _FwdList_Alloc(pObj);
+    if (pNode == NULL) {
+        return FwdList_Error;
+    }
+
+    /* Copy the data into the list one byte at a time */
+    for (size_t byte = 0; byte < pObj->dataSize; byte++) {
+        pNode->pData[byte] = ((uint8_t *)pDataInVoid)[byte];
+    }
+
+    /* Update iterator */
+    pNode->pNext = pIter->_pCurr;
+    if (pIter->_pPrev != NULL) {
+        ((FwdList_Node_t *)pIter->_pPrev)->pNext = pNode;
+    }
+    pIter->_pCurr = pNode;
+    pIter->pData = ((FwdList_Node_t *)pIter->_pCurr)->pData;
+    
+    /* Update list object state */
+    if (pIter->_pPrev == NULL && pIter->_pCurr == NULL) {
+        /* Insert into empty list */
+        pObj->pHead = pNode;
+        pObj->pTail = pNode;
+    } else if (pIter->_pPrev == NULL && pIter->_pCurr != NULL) {
+        /* Insert at start of list */
+        pObj->pHead = pNode;
+    } else if (pIter->_pPrev != NULL && pIter->_pCurr == NULL) {
+        /* Insert at end of list */
+        pObj->pTail = pNode;
+    }
+    pObj->count++;
+
+    return err;
 }
 
 /*============================================================================*
