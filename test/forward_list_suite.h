@@ -950,6 +950,57 @@ TEST List_can_insert_data_into_a_list_with_1_existing_item(void)
     PASS();
 }
 
+TEST List_can_insert_data_into_the_beginning_of_a_list(void)
+{
+    /*****************    Arrange    *****************/
+    const size_t   listSize = 5;
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[listSize];
+    uint32_t       dataBuf[listSize];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn[] = { 1000, 100, 10, 1 };
+    FwdList_PushBack(&list, &dataIn[0]);    
+    FwdList_PushBack(&list, &dataIn[1]);    
+    FwdList_PushBack(&list, &dataIn[2]);    
+    FwdList_PushBack(&list, &dataIn[3]);
+    uint32_t insertData = 2000;
+    
+    /*****************     Act       *****************/
+    for (FwdList_Iter_t it = FwdList_Begin(&list); it.pData != NULL; FwdList_Next(&it))
+    {
+        if (insertData > *(uint32_t *)it.pData) {
+            FwdList_Insert(&list, &it, &insertData);
+            break;
+        }
+    }
+
+    /*****************    Assert     *****************/
+    ASSERT_EQ(false, FwdList_IsEmpty(&list));
+    ASSERT_EQ(true, FwdList_IsFull(&list));
+    ASSERT_EQ_FMT(5, FwdList_Count(&list), "%zu");
+
+    uint32_t dataOut[listSize];
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[0]));
+    ASSERT_EQ_FMT(insertData, dataOut[0], "%zu");
+    
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[1]));
+    ASSERT_EQ_FMT(dataIn[0], dataOut[1], "%zu");
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[2]));
+    ASSERT_EQ_FMT(dataIn[1], dataOut[2], "%zu");
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[3]));
+    ASSERT_EQ_FMT(dataIn[2], dataOut[3], "%zu");
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[4]));
+    ASSERT_EQ_FMT(dataIn[3], dataOut[4], "%zu");
+
+    ASSERT_EQ(true, FwdList_IsEmpty(&list));
+    ASSERT_EQ(false, FwdList_IsFull(&list));
+    ASSERT_EQ_FMT(0, FwdList_Count(&list), "%zu");
+
+    PASS();
+}
+
 TEST List_can_insert_data_into_the_middle_of_a_list(void)
 {
     /*****************    Arrange    *****************/
@@ -1619,6 +1670,7 @@ SUITE(FwdList_Suite)
     RUN_TEST(List_can_iterate_through_data);
     RUN_TEST(List_can_insert_data_into_an_empty_list);
     RUN_TEST(List_can_insert_data_into_a_list_with_1_existing_item);
+    RUN_TEST(List_can_insert_data_into_the_beginning_of_a_list);
     RUN_TEST(List_can_insert_data_into_the_middle_of_a_list);
     RUN_TEST(List_can_insert_data_at_end_of_list);
 
