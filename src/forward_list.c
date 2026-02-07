@@ -332,6 +332,38 @@ FwdList_Error_e FwdList_Insert(FwdList_t *pObj, FwdList_Iter_t *pIter, void *pDa
     return err;
 }
 
+FwdList_Error_e FwdList_Erase(FwdList_t *pObj, FwdList_Iter_t *pIter)
+{
+    FwdList_Error_e err = FwdList_Error_None;
+
+    /* Erasing can only occur on a valid node */
+    if (pIter->_pCurr == NULL) {
+        return err;
+    }
+
+    /* Update iterator */
+    FwdList_Node_t *pNode = ((FwdList_Node_t *)pIter->_pCurr);
+    pIter->_pCurr = ((FwdList_Node_t *)pIter->_pCurr)->pNext;
+    if (pIter->_pPrev != NULL) {
+        ((FwdList_Node_t *)pIter->_pPrev)->pNext = pIter->_pCurr;
+    }
+    pIter->pData = (pIter->_pCurr != NULL) ? ((FwdList_Node_t *)pIter->_pCurr)->pData : NULL;
+    _FwdList_Free(pObj, pNode);
+
+    /* Update list object state */
+    if (pIter->_pPrev == NULL && pIter->_pCurr == NULL) {
+        /* Erase created an empty list */
+        pObj->pHead = pIter->_pCurr;
+        pObj->pTail = pIter->_pCurr;
+    } else if (pIter->_pPrev == NULL && pIter->_pCurr != NULL) {
+        /* Erase removed the head node */
+        pObj->pHead = pIter->_pCurr;
+    } else if (pIter->_pPrev != NULL && pIter->_pCurr == NULL) {
+        /* Erase removed the tail node */
+        pObj->pTail = pIter->_pPrev;
+    }
+    pObj->count--;
+
     return err;
 }
 

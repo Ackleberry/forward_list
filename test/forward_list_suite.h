@@ -1120,6 +1120,203 @@ TEST List_can_insert_data_at_end_of_list(void)
     PASS();
 }
 
+TEST List_does_not_crash_when_erasing_data_in_an_empty_list(void)
+{
+    /*****************    Arrange    *****************/
+    const size_t   listSize = 5;
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[listSize];
+    uint32_t       dataBuf[listSize];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    /*****************     Act       *****************/
+    FwdList_Iter_t it = FwdList_Begin(&list);
+    FwdList_Error_e err = FwdList_Erase(&list, &it);
+
+    /*****************    Assert     *****************/
+    ASSERT_EQ(true, FwdList_IsEmpty(&list));
+    ASSERT_EQ(false, FwdList_IsFull(&list));
+    ASSERT_EQ(0, FwdList_Count(&list));
+    ASSERT_EQ(0, it.index);
+    ASSERT_EQ(NULL, it.pData);
+    ASSERT_EQ(FwdList_Error_None, err);
+
+    PASS();  
+}
+
+TEST List_can_erase_data_in_a_list_with_1_existing_item(void)
+{
+    /*****************    Arrange    *****************/
+    const size_t   listSize = 4;
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[listSize];
+    uint32_t       dataBuf[listSize];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn = 15;
+    FwdList_Iter_t it = FwdList_Begin(&list);
+    FwdList_Insert(&list, &it, &dataIn);
+    
+    /*****************     Act       *****************/
+    FwdList_Error_e err = FwdList_Erase(&list, &it);
+
+    /*****************    Assert     *****************/
+    ASSERT_EQ(FwdList_Error_None, err);
+    ASSERT_EQ(true, FwdList_IsEmpty(&list));
+    ASSERT_EQ(false, FwdList_IsFull(&list));
+    ASSERT_EQ(0, FwdList_Count(&list));
+    ASSERT_EQ_FMT(0, it.index, "%zu");
+    ASSERT_EQ(NULL, it.pData);
+
+    PASS();
+}
+
+TEST List_can_erase_data_at_the_beginning_of_a_list(void)
+{
+    /*****************    Arrange    *****************/
+    const size_t   listSize = 3;
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[listSize];
+    uint32_t       dataBuf[listSize];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn[] = { 100, 10, 1 };
+    FwdList_PushBack(&list, &dataIn[0]);    
+    FwdList_PushBack(&list, &dataIn[1]);    
+    FwdList_PushBack(&list, &dataIn[2]);    
+    uint32_t eraseData = dataIn[0];
+    
+    /*****************     Act       *****************/
+    for (FwdList_Iter_t it = FwdList_Begin(&list); it.pData != NULL; FwdList_Next(&it))
+    {
+        if (eraseData == *(uint32_t *)it.pData) {
+            FwdList_Erase(&list, &it);
+            break;
+        }
+    }
+
+    /*****************    Assert     *****************/
+    ASSERT_EQ(false, FwdList_IsEmpty(&list));
+    ASSERT_EQ(false, FwdList_IsFull(&list));
+    ASSERT_EQ_FMT(2, FwdList_Count(&list), "%zu");
+
+    uint32_t dataOut;
+    ASSERT_EQ(FwdList_Error_None, FwdList_PeekFront(&list, &dataOut));
+    ASSERT_EQ_FMT(dataIn[1], dataOut, "%zu");
+    ASSERT_EQ(FwdList_Error_None, FwdList_PeekBack(&list, &dataOut));
+    ASSERT_EQ_FMT(dataIn[2], dataOut, "%zu");
+    
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut));
+    ASSERT_EQ_FMT(dataIn[1], dataOut, "%zu");
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopBack(&list, &dataOut));
+    ASSERT_EQ_FMT(dataIn[2], dataOut, "%zu");
+
+    ASSERT_EQ(true, FwdList_IsEmpty(&list));
+    ASSERT_EQ(false, FwdList_IsFull(&list));
+    ASSERT_EQ_FMT(0, FwdList_Count(&list), "%zu");
+
+    PASS();
+}
+
+TEST List_can_erase_data_in_the_middle_of_a_list(void)
+{
+    /*****************    Arrange    *****************/
+    const size_t   listSize = 3;
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[listSize];
+    uint32_t       dataBuf[listSize];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn[] = { 100, 10, 1 };
+    FwdList_PushBack(&list, &dataIn[0]);    
+    FwdList_PushBack(&list, &dataIn[1]);    
+    FwdList_PushBack(&list, &dataIn[2]);    
+    uint32_t eraseData = dataIn[1];
+    
+    /*****************     Act       *****************/
+    for (FwdList_Iter_t it = FwdList_Begin(&list); it.pData != NULL; FwdList_Next(&it))
+    {
+        if (eraseData == *(uint32_t *)it.pData) {
+            FwdList_Erase(&list, &it);
+            break;
+        }
+    }
+
+    /*****************    Assert     *****************/
+    ASSERT_EQ(false, FwdList_IsEmpty(&list));
+    ASSERT_EQ(false, FwdList_IsFull(&list));
+    ASSERT_EQ_FMT(2, FwdList_Count(&list), "%zu");
+
+    uint32_t dataOut;
+    ASSERT_EQ(FwdList_Error_None, FwdList_PeekFront(&list, &dataOut));
+    ASSERT_EQ_FMT(dataIn[0], dataOut, "%zu");
+    ASSERT_EQ(FwdList_Error_None, FwdList_PeekBack(&list, &dataOut));
+    ASSERT_EQ_FMT(dataIn[2], dataOut, "%zu");
+    
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut));
+    ASSERT_EQ_FMT(dataIn[0], dataOut, "%zu");
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopBack(&list, &dataOut));
+    ASSERT_EQ_FMT(dataIn[2], dataOut, "%zu");
+
+    ASSERT_EQ(true, FwdList_IsEmpty(&list));
+    ASSERT_EQ(false, FwdList_IsFull(&list));
+    ASSERT_EQ_FMT(0, FwdList_Count(&list), "%zu");
+
+    PASS();   
+}
+
+TEST List_can_erase_data_at_the_end_of_a_list(void)
+{
+    /*****************    Arrange    *****************/
+    const size_t   listSize = 3;
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[listSize];
+    uint32_t       dataBuf[listSize];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn[] = { 100, 10, 1 };
+    FwdList_PushBack(&list, &dataIn[0]);    
+    FwdList_PushBack(&list, &dataIn[1]);    
+    FwdList_PushBack(&list, &dataIn[2]);    
+    uint32_t eraseData = dataIn[2];
+    
+    /*****************     Act       *****************/
+    for (FwdList_Iter_t it = FwdList_Begin(&list); it.pData != NULL; FwdList_Next(&it))
+    {
+        if (eraseData == *(uint32_t *)it.pData) {
+            FwdList_Erase(&list, &it);
+            break;
+        }
+    }
+
+    /*****************    Assert     *****************/
+    ASSERT_EQ(false, FwdList_IsEmpty(&list));
+    ASSERT_EQ(false, FwdList_IsFull(&list));
+    ASSERT_EQ_FMT(2, FwdList_Count(&list), "%zu");
+
+    uint32_t dataOut;
+    ASSERT_EQ(FwdList_Error_None, FwdList_PeekFront(&list, &dataOut));
+    ASSERT_EQ_FMT(dataIn[0], dataOut, "%zu");
+    ASSERT_EQ(FwdList_Error_None, FwdList_PeekBack(&list, &dataOut));
+    ASSERT_EQ_FMT(dataIn[1], dataOut, "%zu");
+    
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut));
+    ASSERT_EQ_FMT(dataIn[0], dataOut, "%zu");
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopBack(&list, &dataOut));
+    ASSERT_EQ_FMT(dataIn[1], dataOut, "%zu");
+
+    ASSERT_EQ(true, FwdList_IsEmpty(&list));
+    ASSERT_EQ(false, FwdList_IsFull(&list));
+    ASSERT_EQ_FMT(0, FwdList_Count(&list), "%zu");
+
+    PASS();
+}
+
 TEST List_can_reverse_a_list_with_0_nodes(void)
 {
     /*****************    Arrange    *****************/
@@ -1683,6 +1880,12 @@ SUITE(FwdList_Suite)
     RUN_TEST(List_can_insert_data_into_the_beginning_of_a_list);
     RUN_TEST(List_can_insert_data_into_the_middle_of_a_list);
     RUN_TEST(List_can_insert_data_at_end_of_list);
+
+    RUN_TEST(List_does_not_crash_when_erasing_data_in_an_empty_list);
+    RUN_TEST(List_can_erase_data_in_a_list_with_1_existing_item);
+    RUN_TEST(List_can_erase_data_at_the_beginning_of_a_list);
+    RUN_TEST(List_can_erase_data_in_the_middle_of_a_list);
+    RUN_TEST(List_can_erase_data_at_the_end_of_a_list);
 
     RUN_TEST(List_can_reverse_a_list_with_0_nodes);
     RUN_TEST(List_can_reverse_a_list_with_1_nodes);
