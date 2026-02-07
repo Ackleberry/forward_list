@@ -162,11 +162,11 @@ FwdList_Iter_t FwdList_Begin(FwdList_t *pObj);
 void FwdList_Next(FwdList_Iter_t *pIter);
 
 /*******************************************************************************
- * @brief  Inserts data before iterator.
+ * @brief  Inserts data before iterator. Iterator is updated to point to the
+ *         newly inserted data.
  *
  * @param pObj         Pointer to the forward list object
- * @param pIter        Pointer to the list iterator. Updated to the newly
- *                     inserted data.
+ * @param pIter        Pointer to the list iterator. 
  * @param pDataInVoid  Pointer to the data that will be pushed
  *
  * @returns forward list error flag
