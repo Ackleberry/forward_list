@@ -1317,6 +1317,48 @@ TEST List_can_erase_data_at_the_end_of_a_list(void)
     PASS();
 }
 
+TEST List_can_erase_all_even_numbers(void)
+{
+    /*****************    Arrange    *****************/
+    const size_t   listSize = 10;
+    FwdList_t      list;
+    FwdList_Node_t nodeBuf[listSize];
+    uint32_t       dataBuf[listSize];
+    FwdList_Init(&list, &nodeBuf, sizeof(nodeBuf),
+                        &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
+
+    uint32_t dataIn[] = { 102, 99, 97, 66, 54, 11, 6, 13, 33, 20 };
+    for (int x = 0; x < ELEMENTS_IN(dataIn); x++)
+    {
+        FwdList_PushBack(&list, &dataIn[x]);
+    }
+    
+    /*****************     Act       *****************/
+    FwdList_Iter_t it = FwdList_Begin(&list);
+    while (it.pData != NULL)
+    {
+        if (*(uint32_t *)it.pData % 2 == 0) {
+            FwdList_Erase(&list, &it);
+        } else {
+            FwdList_Next(&it);
+        }
+    }
+
+    /*****************    Assert     *****************/
+    ASSERT_EQ(false, FwdList_IsEmpty(&list));
+    ASSERT_EQ(false, FwdList_IsFull(&list));
+    ASSERT_EQ_FMT(5, FwdList_Count(&list), "%zu");
+    size_t count = FwdList_Count(&list);
+    for (int x = 0; x < count; x++)
+    {   
+        uint32_t dataOut;
+        FwdList_PopFront(&list, &dataOut);
+        ASSERT_EQ_FMT(true, dataOut % 2 != 0, "%zu");
+    }
+
+    PASS();
+}
+
 TEST List_can_reverse_a_list_with_0_nodes(void)
 {
     /*****************    Arrange    *****************/
@@ -1886,6 +1928,7 @@ SUITE(FwdList_Suite)
     RUN_TEST(List_can_erase_data_at_the_beginning_of_a_list);
     RUN_TEST(List_can_erase_data_in_the_middle_of_a_list);
     RUN_TEST(List_can_erase_data_at_the_end_of_a_list);
+    RUN_TEST(List_can_erase_all_even_numbers);
 
     RUN_TEST(List_can_reverse_a_list_with_0_nodes);
     RUN_TEST(List_can_reverse_a_list_with_1_nodes);
