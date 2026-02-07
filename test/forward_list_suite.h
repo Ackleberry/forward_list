@@ -894,7 +894,7 @@ TEST List_can_insert_data_into_an_empty_list(void)
                         &dataBuf, sizeof(dataBuf), sizeof(dataBuf[0]));
 
     uint32_t insertData = 7;
-    uint32_t dataOut[listSize];
+    uint32_t dataOut;
 
     /*****************     Act       *****************/
     FwdList_Iter_t it = FwdList_Begin(&list);
@@ -906,8 +906,10 @@ TEST List_can_insert_data_into_an_empty_list(void)
     ASSERT_EQ(1, FwdList_Count(&list));
     ASSERT_EQ(0, it.index);
     ASSERT_EQ(insertData, *(uint32_t *)it.pData);
-    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[0]));
-    ASSERT_EQ(insertData, dataOut[0]);
+    ASSERT_EQ(FwdList_Error_None, FwdList_PeekFront(&list, &dataOut));
+    ASSERT_EQ(insertData, dataOut);
+    ASSERT_EQ(FwdList_Error_None, FwdList_PeekBack(&list, &dataOut));
+    ASSERT_EQ(insertData, dataOut);
 
     PASS();
 }

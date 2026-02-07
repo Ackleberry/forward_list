@@ -307,14 +307,6 @@ FwdList_Error_e FwdList_Insert(FwdList_t *pObj, FwdList_Iter_t *pIter, void *pDa
         pNode->pData[byte] = ((uint8_t *)pDataInVoid)[byte];
     }
 
-    /* Update iterator */
-    pNode->pNext = pIter->_pCurr;
-    if (pIter->_pPrev != NULL) {
-        ((FwdList_Node_t *)pIter->_pPrev)->pNext = pNode;
-    }
-    pIter->_pCurr = pNode;
-    pIter->pData = ((FwdList_Node_t *)pIter->_pCurr)->pData;
-    
     /* Update list object state */
     if (pIter->_pPrev == NULL && pIter->_pCurr == NULL) {
         /* Insert into empty list */
@@ -328,6 +320,17 @@ FwdList_Error_e FwdList_Insert(FwdList_t *pObj, FwdList_Iter_t *pIter, void *pDa
         pObj->pTail = pNode;
     }
     pObj->count++;
+
+    /* Update iterator */
+    pNode->pNext = pIter->_pCurr;
+    if (pIter->_pPrev != NULL) {
+        ((FwdList_Node_t *)pIter->_pPrev)->pNext = pNode;
+    }
+    pIter->_pCurr = pNode;
+    pIter->pData = ((FwdList_Node_t *)pIter->_pCurr)->pData;
+
+    return err;
+}
 
     return err;
 }
