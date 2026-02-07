@@ -1677,6 +1677,7 @@ SUITE(FwdList_Suite)
     RUN_TEST(List_iterator_does_not_advance_if_there_are_no_available_nodes);
     RUN_TEST(List_iterator_does_advance_if_there_are_available_nodes);
     RUN_TEST(List_can_iterate_through_data);
+
     RUN_TEST(List_can_insert_data_into_an_empty_list);
     RUN_TEST(List_can_insert_data_into_a_list_with_1_existing_item);
     RUN_TEST(List_can_insert_data_into_the_beginning_of_a_list);
