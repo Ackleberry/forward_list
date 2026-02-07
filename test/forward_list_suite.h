@@ -910,6 +910,11 @@ TEST List_can_insert_data_into_an_empty_list(void)
     ASSERT_EQ(insertData, dataOut);
     ASSERT_EQ(FwdList_Error_None, FwdList_PeekBack(&list, &dataOut));
     ASSERT_EQ(insertData, dataOut);
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopBack(&list, &dataOut));
+    ASSERT_EQ(insertData, dataOut);
+    ASSERT_EQ(true, FwdList_IsEmpty(&list));
+    ASSERT_EQ(false, FwdList_IsFull(&list));
+    ASSERT_EQ(0, FwdList_Count(&list));
 
     PASS();
 }
@@ -926,25 +931,27 @@ TEST List_can_insert_data_into_a_list_with_1_existing_item(void)
 
     uint32_t dataIn[] = { 15, 9 };
     FwdList_Iter_t it = FwdList_Begin(&list);
-    ASSERT_EQ_FMT(0, it.index, "%zu");
     FwdList_Insert(&list, &it, &dataIn[0]);
-    ASSERT_EQ_FMT(0, it.index, "%zu");
     
     /*****************     Act       *****************/
     FwdList_Error_e err = FwdList_Insert(&list, &it, &dataIn[1]);
 
     /*****************    Assert     *****************/
-    uint32_t dataOut[listSize];
+    uint32_t dataOut;
     ASSERT_EQ(FwdList_Error_None, err);
     ASSERT_EQ(false, FwdList_IsEmpty(&list));
     ASSERT_EQ(false, FwdList_IsFull(&list));
     ASSERT_EQ(2, FwdList_Count(&list));
     ASSERT_EQ_FMT(0, it.index, "%zu");
     ASSERT_EQ(dataIn[1], *(uint32_t *)it.pData);
-    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[0]));
-    ASSERT_EQ_FMT(dataIn[1], dataOut[0], "%d");
-    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut[1]));
-    ASSERT_EQ_FMT(dataIn[0], dataOut[1], "%d");
+    ASSERT_EQ(FwdList_Error_None, FwdList_PeekFront(&list, &dataOut));
+    ASSERT_EQ_FMT(dataIn[1], dataOut, "%d");
+    ASSERT_EQ(FwdList_Error_None, FwdList_PeekBack(&list, &dataOut));
+    ASSERT_EQ_FMT(dataIn[0], dataOut, "%d");
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopBack(&list, &dataOut));
+    ASSERT_EQ_FMT(dataIn[0], dataOut, "%d");
+    ASSERT_EQ(FwdList_Error_None, FwdList_PopFront(&list, &dataOut));
+    ASSERT_EQ_FMT(dataIn[1], dataOut, "%d");
     ASSERT_EQ(true, FwdList_IsEmpty(&list));
     ASSERT_EQ(false, FwdList_IsFull(&list));
     ASSERT_EQ(0, FwdList_Count(&list));
